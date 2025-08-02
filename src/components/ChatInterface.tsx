@@ -13,7 +13,7 @@ interface Message {
   willSpeak?: boolean;
 }
 
-const ChatInterface: React.FC = () => {
+export const ChatInterface: React.FC = () => {
   const navigate = useNavigate();
   const { emergencyData, endEmergency, hangupCall, callStatus, isSOSInitiated, startCallStatusMonitoring, stopCallStatusMonitoring, isAIGuideEnabled, toggleAIGuide } = useEmergency();
   
@@ -449,5 +449,3 @@ const ChatInterface: React.FC = () => {
     </div>
   );
 };
-
-export default ChatInterface;
