@@ -1,57 +1,61 @@
 import React from 'react';
-import { AlertTriangle, Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Shield, AlertTriangle } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
-interface EmergencyTriggerProps {
-  onNavigate: (route: string) => void;
-}
-
-export const EmergencyTrigger: React.FC<EmergencyTriggerProps> = ({ onNavigate }) => {
+const PanicTrigger: React.FC = () => {
+  const navigate = useNavigate();
   const { startEmergency } = useEmergency();
 
-  const handleStartEmergency = () => {
+  const handleEmergencyStart = () => {
     startEmergency();
-    onNavigate('/form');
+    navigate('/form');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full text-center space-y-8">
-        <div className="space-y-4">
-          <div className="flex justify-center">
-            <div className="bg-white p-6 rounded-full shadow-lg">
-              <Shield className="w-12 h-12 text-blue-600" />
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md mx-auto text-center">
+        {/* Logo */}
+        <div className="mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
+            <Shield className="w-8 h-8 text-red-600" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-800">WhisperNet</h1>
-          <p className="text-slate-600 text-lg">
-            Silent emergency communication powered by AI
-          </p>
+          <h1 className="text-3xl font-bold text-white mb-2">WhisprNet</h1>
+          <p className="text-gray-300 text-lg">Silent Emergency Communication</p>
         </div>
 
-        <div className="space-y-6">
+        {/* Emergency Trigger Button */}
+        <div className="mb-8">
           <button
-            onClick={handleStartEmergency}
-            className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xl font-semibold py-6 px-8 rounded-2xl shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-300"
-            aria-label="Start Emergency - This will begin the emergency communication process"
+            onClick={handleEmergencyStart}
+            className="w-full h-32 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold text-2xl rounded-2xl shadow-2xl transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50"
+            aria-label="Start Emergency"
           >
             <div className="flex items-center justify-center space-x-3">
               <AlertTriangle className="w-8 h-8" />
               <span>Start Emergency</span>
             </div>
           </button>
+        </div>
 
-          <div className="text-sm text-slate-500 space-y-2">
-            <p>• Tap to begin silent emergency communication</p>
-            <p>• Your location will be shared with authorities</p>
-            <p>• AI will help communicate your situation clearly</p>
+        {/* Instructions */}
+        <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
+          <h2 className="text-white font-semibold mb-3">How WhisprNet Works</h2>
+          <div className="text-gray-300 text-sm space-y-2">
+            <p>1. Tap "Start Emergency" to begin</p>
+            <p>2. Fill out the emergency form</p>
+            <p>3. AI will create a summary for authorities</p>
+            <p>4. Chat interface for real-time communication</p>
           </div>
         </div>
 
-        <div className="text-xs text-slate-400">
-          <p>For immediate life-threatening emergencies, call 911 directly</p>
+        {/* Stealth Access Note */}
+        <div className="mt-6 text-gray-400 text-xs">
+          <p>Bookmark this page for quick access during emergencies</p>
         </div>
       </div>
     </div>
   );
 };
+
+export default PanicTrigger;
