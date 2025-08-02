@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Volume2, Mic, Phone, PhoneOff, Home, Bot, NutOff as BotOff } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useEmergency } from '../context/EmergencyContext';
 import { supabase, WhisprMessage } from '../lib/supabase';
 
@@ -13,8 +12,11 @@ interface Message {
   willSpeak?: boolean;
 }
 
-export const ChatInterface: React.FC = () => {
-  const navigate = useNavigate();
+interface ChatInterfaceProps {
+  onNavigate: (route: string) => void;
+}
+
+export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
   const { emergencyData, endEmergency, hangupCall, callStatus, isSOSInitiated, startCallStatusMonitoring, stopCallStatusMonitoring, isAIGuideEnabled, toggleAIGuide } = useEmergency();
   
   const [messages, setMessages] = useState<Message[]>([]);
@@ -210,7 +212,7 @@ export const ChatInterface: React.FC = () => {
   }, [callStatus]);
 
   const handleGoHome = () => {
-    navigate('/');
+    onNavigate('/');
   };
 
   const getMessageStyle = (message: Message) => {
