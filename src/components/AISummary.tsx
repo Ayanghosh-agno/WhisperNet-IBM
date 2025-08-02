@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, Edit, Bot, Shield } from 'lucide-react';
+import { Phone, Edit, Bot, Shield, Loader2 } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
 interface AISummaryProps {
@@ -8,6 +8,7 @@ interface AISummaryProps {
 
 export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
   const { emergencyData, initiateSOSCall, startCallStatusMonitoring } = useEmergency();
+  const [isInitiating, setIsInitiating] = useState(false);
 
   const generateAISummary = (): string => {
     const { situationType, locationName, description, numberOfThreats, callNumber, emergencyContact1, emergencyContact2, coordinates } = emergencyData;
@@ -24,12 +25,14 @@ export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
   };
 
   const handleMakeCall = async () => {
+    setIsInitiating(true);
     const success = await initiateSOSCall();
     if (success) {
       startCallStatusMonitoring();
       onNavigate('/chat');
     } else {
       console.error('Failed to initiate SOS call');
+      setIsInitiating(false);
     }
   };
 
@@ -96,17 +99,23 @@ export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
           <div className="space-y-3">
             <button
               onClick={handleMakeCall}
-              className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-lg font-semibold py-4 px-6 rounded-2xl shadow-sm transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-red-300"
+              disabled={isInitiating}
+              className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:bg-red-400 disabled:cursor-not-allowed text-white text-lg font-semibold py-4 px-6 rounded-2xl shadow-sm transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-red-300 disabled:transform-none"
             >
               <div className="flex items-center justify-center space-x-3">
-                <Phone className="w-5 h-5" />
-                <span>Initiate SOS Call</span>
+                {isInitiating ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Phone className="w-5 h-5" />
+                )}
+                <span>{isInitiating ? 'Initiating Call...' : 'Initiate SOS Call'}</span>
               </div>
             </button>
 
             <button
               onClick={handleEditMessage}
-              className="w-full bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-lg font-medium py-4 px-6 rounded-2xl border border-gray-300 shadow-sm transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-gray-300"
+              disabled={isInitiating}
+              className="w-full bg-white hover:bg-gray-50 active:bg-gray-100 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-700 text-lg font-medium py-4 px-6 rounded-2xl border border-gray-300 shadow-sm transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:transform-none"
             >
               <div className="flex items-center justify-center space-x-3">
                 <Edit className="w-5 h-5" />
