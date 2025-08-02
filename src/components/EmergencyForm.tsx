@@ -38,17 +38,6 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
   };
 
   const handleLocationChange = (locationData: { address: string; latitude: number; longitude: number }) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      location: locationData.address,
-      coordinates: {
-        latitude: locationData.latitude,
-        longitude: locationData.longitude
-      }
-    }));
-  };
-
-  const handleLocationChange = (locationData: { address: string; latitude: number; longitude: number }) => {
     setFormData(prev => ({ ...prev, location: locationData.address }));
   };
 
