@@ -1,15 +1,17 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Shield, AlertTriangle } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
-export const EmergencyTrigger: React.FC = () => {
-  const navigate = useNavigate();
+interface EmergencyTriggerProps {
+  onNavigate: (route: string) => void;
+}
+
+export const EmergencyTrigger: React.FC<EmergencyTriggerProps> = ({ onNavigate }) => {
   const { startEmergency } = useEmergency();
 
   const handleEmergencyStart = () => {
     startEmergency();
-    navigate('/form');
+    onNavigate('/form');
   };
 
   return (
