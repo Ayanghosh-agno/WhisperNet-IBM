@@ -3,7 +3,6 @@ import { Send, ArrowLeft } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { EmergencyData } from '../types/emergency';
 import { LocationPicker } from './LocationPicker';
-import { LocationPicker } from './LocationPicker';
 
 interface EmergencyFormProps {
   onNavigate: (route: string) => void;
