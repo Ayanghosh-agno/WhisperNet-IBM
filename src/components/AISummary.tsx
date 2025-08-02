@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Phone, Edit, Bot, Shield, Loader2 } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
