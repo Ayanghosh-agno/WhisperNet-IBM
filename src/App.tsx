@@ -32,7 +32,7 @@ function App() {
     <EmergencyProvider>
       <div className="min-h-screen">
         {renderCurrentPage()}
-        <EmergencyFooter />
+        {currentRoute !== '/' && <EmergencyFooter />}
       </div>
     </EmergencyProvider>
   );
