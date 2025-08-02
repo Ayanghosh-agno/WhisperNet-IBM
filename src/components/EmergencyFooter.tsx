@@ -70,6 +70,9 @@ export const EmergencyFooter: React.FC = () => {
 
   if (!isEmergencyActive) return null;
 
+  // Only show footer after SOS call is initiated
+  if (!isSOSInitiated) return null;
+
   return (
     <div className={`fixed bottom-0 left-0 right-0 ${getBackgroundColor()} text-white p-3 shadow-lg`}>
       <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
