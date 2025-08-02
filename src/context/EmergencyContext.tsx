@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { ChatMessage } from '../types/emergency';
 
 interface EmergencyData {
   situationType: string;
@@ -18,8 +19,10 @@ interface EmergencyData {
 interface EmergencyContextType {
   isEmergencyActive: boolean;
   emergencyData: EmergencyData;
+  chatMessages: ChatMessage[];
   startEmergency: () => void;
   updateEmergencyData: (data: Partial<EmergencyData>) => void;
+  addChatMessage: (message: ChatMessage) => void;
   endEmergency: () => void;
   elapsedTime: number;
   initiateSOSCall: () => Promise<boolean>;
@@ -47,6 +50,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [callStatus, setCallStatus] = useState('queued');
   const [isSOSInitiated, setIsSOSInitiated] = useState(false);
   const [isAIGuideEnabled, setIsAIGuideEnabled] = useState(true);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [emergencyData, setEmergencyData] = useState<EmergencyData>({
     situationType: '',
     location: '',
@@ -138,12 +142,17 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setEmergencyData(prev => ({ ...prev, ...data }));
   };
 
+  const addChatMessage = (message: ChatMessage) => {
+    setChatMessages(prev => [...prev, message]);
+  };
+
   const endEmergency = () => {
     setIsEmergencyActive(false);
     setCallStatus('queued');
     setIsSOSInitiated(false);
     setIsAIGuideEnabled(true);
     setElapsedTime(0);
+    setChatMessages([]);
   };
 
   const initiateSOSCall = async (): Promise<boolean> => {
@@ -259,8 +268,10 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       value={{
         isEmergencyActive,
         emergencyData,
+        chatMessages,
         startEmergency,
         updateEmergencyData,
+        addChatMessage,
         endEmergency,
         elapsedTime,
         initiateSOSCall,

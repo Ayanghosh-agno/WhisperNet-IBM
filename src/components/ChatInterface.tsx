@@ -8,7 +8,7 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
-  const { state, addChatMessage } = useEmergency();
+  const { chatMessages, addChatMessage } = useEmergency();
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -19,11 +19,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [state.chatMessages]);
+  }, [chatMessages]);
 
   useEffect(() => {
     // Simulate initial authority message
-    if (state.chatMessages.length === 0) {
+    if (chatMessages.length === 0) {
       setTimeout(() => {
         const initialMessage: ChatMessage = {
           id: '1',
@@ -34,7 +34,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
         addChatMessage(initialMessage);
       }, 1000);
     }
-  }, [state.chatMessages.length, addChatMessage]);
+  }, [chatMessages.length, addChatMessage]);
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -109,7 +109,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
 
       <div className="flex-1 overflow-y-auto p-4">
         <div className="max-w-2xl mx-auto space-y-4">
-          {state.chatMessages.map((message) => (
+          {chatMessages.map((message) => (
             <div
               key={message.id}
               className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
