@@ -233,14 +233,40 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
           const coordinates = { lat: latitude, lng: longitude };
-          updateEmergencyData({
-            location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-            locationName: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-            coordinates
-          });
+          
+          // Perform reverse geocoding to get address
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+            );
+            const data = await response.json();
+            
+            if (data && data.display_name) {
+              updateEmergencyData({
+                location: data.display_name,
+                locationName: data.display_name,
+                coordinates
+              });
+            } else {
+              // Fallback to coordinates if reverse geocoding fails
+              updateEmergencyData({
+                location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+                locationName: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+                coordinates
+              });
+            }
+          } catch (error) {
+            console.error('Reverse geocoding failed:', error);
+            // Fallback to coordinates if reverse geocoding fails
+            updateEmergencyData({
+              location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+              locationName: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+              coordinates
+            });
+          }
         },
         (error) => {
           console.error('Error getting location:', error);

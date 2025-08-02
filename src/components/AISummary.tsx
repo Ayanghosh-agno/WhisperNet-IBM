@@ -19,9 +19,9 @@ export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
       : '';
     
     const threatInfo = numberOfThreats ? ` Number of individuals involved: ${numberOfThreats}.` : '';
-    const locationCoords = coordinates ? `${coordinates.lat}, ${coordinates.lng}` : '';
+    const locationInfo = locationName || (coordinates ? `${coordinates.lat}, ${coordinates.lng}` : 'Location not available');
     
-    return `Emergency reported at ${locationCoords}. Details: ${description}. Immediate response requested. Silent communication system in use - victim may not be able to speak freely.`;
+    return `Emergency reported at ${locationInfo}. Details: ${description}. Immediate response requested. Silent communication system in use - victim may not be able to speak freely.`;
   };
 
   const handleMakeCall = async () => {
@@ -82,9 +82,10 @@ export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
               <div>
                 <span className="text-gray-500">Location:</span>
                 <span className="ml-2 font-medium text-gray-900">
-                  {emergencyData.coordinates 
-                    ? `${emergencyData.coordinates.lat}, ${emergencyData.coordinates.lng}`
-                    : 'Not available'
+                  {emergencyData.locationName || emergencyData.location || 
+                    (emergencyData.coordinates 
+                      ? `${emergencyData.coordinates.lat}, ${emergencyData.coordinates.lng}`
+                      : 'Not available')
                   }
                 </span>
               </div>
