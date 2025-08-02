@@ -8,7 +8,6 @@ interface EmergencyContextType {
   setAiSummary: (summary: string) => void;
   addChatMessage: (message: ChatMessage) => void;
   endEmergency: () => void;
-  getCurrentLocation: () => Promise<string>;
 }
 
 const EmergencyContext = createContext<EmergencyContextType | undefined>(undefined);
@@ -79,26 +78,6 @@ export const EmergencyProvider: React.FC<EmergencyProviderProps> = ({ children }
     });
   };
 
-  const getCurrentLocation = async (): Promise<string> => {
-    return new Promise((resolve) => {
-      if (!navigator.geolocation) {
-        resolve('Location not available');
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          resolve(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
-        },
-        () => {
-          resolve('Location not available');
-        },
-        { timeout: 5000 }
-      );
-    });
-  };
-
   const generateAISummary = (data: EmergencyData): string => {
     const { situationType, location, description, numberOfThreats } = data;
     
@@ -112,7 +91,6 @@ export const EmergencyProvider: React.FC<EmergencyProviderProps> = ({ children }
     setAiSummary,
     addChatMessage,
     endEmergency,
-    getCurrentLocation,
   };
 
   return (

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { EmergencyData } from '../types/emergency';
+import { LocationPicker } from './LocationPicker';
 
 interface EmergencyFormProps {
   onNavigate: (route: string) => void;
 }
 
 export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
-  const { submitEmergencyData, getCurrentLocation } = useEmergency();
+  const { submitEmergencyData } = useEmergency();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<EmergencyData>({
     situationType: '',
@@ -17,12 +18,6 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
     numberOfThreats: '',
     timestamp: new Date(),
   });
-
-  useEffect(() => {
-    getCurrentLocation().then(location => {
-      setFormData(prev => ({ ...prev, location }));
-    });
-  }, [getCurrentLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +35,10 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
 
   const handleInputChange = (field: keyof EmergencyData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleLocationChange = (locationData: { address: string; latitude: number; longitude: number }) => {
+    setFormData(prev => ({ ...prev, location: locationData.address }));
   };
 
   return (
@@ -81,22 +80,10 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
               </select>
             </div>
 
-            <div>
-              <label htmlFor="location" className="block text-sm font-semibold text-slate-700 mb-2">
-                <div className="flex items-center space-x-1">
-                  <MapPin className="w-4 h-4" />
-                  <span>Current Location</span>
-                </div>
-              </label>
-              <input
-                id="location"
-                type="text"
-                value={formData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg"
-                placeholder="Location will be auto-filled..."
-              />
-            </div>
+            <LocationPicker
+              initialLocation={formData.location}
+              onLocationChange={handleLocationChange}
+            />
 
             <div>
               <label htmlFor="description" className="block text-sm font-semibold text-slate-700 mb-2">

@@ -3,15 +3,18 @@ import { MapPin, Clock } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
 export const EmergencyFooter: React.FC = () => {
-  const { state, getCurrentLocation } = useEmergency();
-  const [location, setLocation] = useState<string>('Getting location...');
+  const { state } = useEmergency();
+  const [location, setLocation] = useState<string>('Location not set');
   const [elapsedTime, setElapsedTime] = useState<string>('00:00');
 
   useEffect(() => {
-    if (state.isActive) {
-      getCurrentLocation().then(setLocation);
+    if (state.isActive && state.data?.location) {
+      // Extract just the city/area from the full address for footer display
+      const parts = state.data.location.split(',');
+      const shortLocation = parts.length > 2 ? `${parts[0]}, ${parts[1]}` : state.data.location;
+      setLocation(shortLocation);
     }
-  }, [state.isActive, getCurrentLocation]);
+  }, [state.isActive, state.data?.location]);
 
   useEffect(() => {
     if (!state.startTime) return;

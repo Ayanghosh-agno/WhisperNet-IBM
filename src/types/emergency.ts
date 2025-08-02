@@ -4,6 +4,10 @@ export interface EmergencyData {
   description: string;
   numberOfThreats: string;
   timestamp: Date;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export interface ChatMessage {
