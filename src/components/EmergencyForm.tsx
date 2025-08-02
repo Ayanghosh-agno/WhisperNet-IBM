@@ -84,12 +84,6 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
               initialLocation={formData.location}
               onLocationChange={handleLocationChange}
             />
-
-            <LocationPicker
-              initialLocation={formData.location}
-              onLocationChange={handleLocationChange}
-            />
-
             <div>
               <label htmlFor="numberOfThreats" className="block text-sm font-semibold text-slate-700 mb-2">
                 Number of Threats
