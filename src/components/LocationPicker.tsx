@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import { MapPin, Navigation, Map, Loader2 } from 'lucide-react';
+import { MapPin, Navigation, RefreshCw } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -34,10 +34,10 @@ const MapClickHandler: React.FC<{ onLocationSelect: (lat: number, lng: number) =
 
 export const LocationPicker: React.FC<LocationPickerProps> = ({ initialLocation, onLocationChange }) => {
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>({
-    lat: 40.7128, // Default to NYC
-    lng: -74.0060
+    lat: 22.566688, // Default coordinates from screenshot
+    lng: 87.862007
   });
-  const [address, setAddress] = useState<string>(initialLocation || '');
+  const [address, setAddress] = useState<string>(initialLocation || 'Bajepratappur, Bardhaman, Burdwan - I, Purba Bardhaman, West Bengal, 713');
   const [isMapVisible, setIsMapVisible] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [isLoadingGeocode, setIsLoadingGeocode] = useState(false);
@@ -124,79 +124,54 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({ initialLocation,
     onLocationChange(locationData);
   };
 
-  // Auto-detect location on component mount
-  useEffect(() => {
-    if (!initialLocation) {
-      getCurrentLocation();
-    }
-  }, [initialLocation, getCurrentLocation]);
-
   return (
-    <div className="space-y-4">
-      <div>
-        <label htmlFor="location" className="block text-sm font-semibold text-slate-700 mb-2">
-          <div className="flex items-center space-x-1">
-            <MapPin className="w-4 h-4" />
-            <span>Current Location</span>
-          </div>
-        </label>
-        
-        <div className="space-y-3">
+    <div className="space-y-3">
+      <div className="flex items-center space-x-2">
+        <MapPin className="w-5 h-5 text-gray-500" />
+        <label className="text-sm font-medium text-gray-700">Your location</label>
+      </div>
+      
+      <div className="space-y-3">
+        <div className="relative">
           <input
-            id="location"
             type="text"
             value={address}
             onChange={handleAddressChange}
-            className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg"
-            placeholder="Enter your location or use GPS..."
+            className="w-full p-4 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            placeholder="Enter your location..."
           />
-          
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              type="button"
-              onClick={getCurrentLocation}
-              disabled={isLoadingLocation}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300"
-            >
-              <div className="flex items-center justify-center space-x-2">
-                {isLoadingLocation ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Navigation className="w-5 h-5" />
-                )}
-                <span>{isLoadingLocation ? 'Getting Location...' : 'Get Current Location'}</span>
-              </div>
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => setIsMapVisible(!isMapVisible)}
-              className="flex-1 bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-slate-300"
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <Map className="w-5 h-5" />
-                <span>{isMapVisible ? 'Hide Map' : 'Show Map & Adjust'}</span>
-              </div>
-            </button>
+          <button
+            type="button"
+            onClick={getCurrentLocation}
+            disabled={isLoadingLocation}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            title="Get current location"
+          >
+            {isLoadingLocation ? (
+              <RefreshCw className="w-5 h-5 animate-spin" />
+            ) : (
+              <Navigation className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => setIsMapVisible(!isMapVisible)}
+            className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <MapPin className="w-4 h-4" />
+            <span>{isMapVisible ? 'Hide Map' : 'Show Map & Adjust Location'}</span>
+          </button>
+          <div className="text-sm text-gray-500">
+            {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
           </div>
         </div>
       </div>
 
       {isMapVisible && (
-        <div className="bg-white border-2 border-slate-200 rounded-xl overflow-hidden shadow-lg">
-          <div className="p-4 bg-slate-50 border-b border-slate-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-800">Adjust Your Location</h3>
-              {isLoadingGeocode && (
-                <div className="flex items-center space-x-2 text-sm text-slate-600">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Getting address...</span>
-                </div>
-              )}
-            </div>
-            <p className="text-sm text-slate-600 mt-1">Click anywhere on the map to set your exact location</p>
-          </div>
-          
+        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
           <div className="h-80 relative">
             <MapContainer
               center={[coordinates.lat, coordinates.lng]}
@@ -213,10 +188,10 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({ initialLocation,
             </MapContainer>
           </div>
           
-          <div className="p-4 bg-slate-50 border-t border-slate-200">
-            <div className="text-sm text-slate-600">
-              <p className="font-semibold">Selected Coordinates:</p>
-              <p>{coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}</p>
+          <div className="p-3 bg-gray-50 border-t border-gray-200">
+            <div className="flex items-center space-x-1 text-sm text-gray-600">
+              <MapPin className="w-4 h-4" />
+              <span>Tap anywhere on the map to update your location</span>
             </div>
           </div>
         </div>

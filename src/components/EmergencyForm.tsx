@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Send, ArrowLeft, Plus, X, Phone } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, AlertCircle, MapPin, Users, Phone, MessageSquare, RefreshCw } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { LocationPicker } from './LocationPicker';
 
@@ -10,7 +10,7 @@ interface EmergencyFormProps {
 export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
   const { emergencyData, updateEmergencyData } = useEmergency();
   const [isLoading, setIsLoading] = useState(false);
-  const [additionalContactInput, setAdditionalContactInput] = useState('');
+  const [showAdditionalContacts, setShowAdditionalContacts] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,190 +49,203 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
     updateEmergencyData({ [field]: formatted });
   };
 
-  const handleAdditionalContactChange = (value: string) => {
-    setAdditionalContactInput(formatPhoneNumber(value));
-  };
-
-  const addAdditionalContact = () => {
-    if (additionalContactInput) {
-      if (!emergencyData.emergencyContact1) {
-        updateEmergencyData({ emergencyContact1: additionalContactInput });
-      } else if (!emergencyData.emergencyContact2) {
-        updateEmergencyData({ emergencyContact2: additionalContactInput });
-      }
-      setAdditionalContactInput('');
-    }
-  };
-
-  const removeAdditionalContact = (contactNumber: 1 | 2) => {
-    if (contactNumber === 1) {
-      updateEmergencyData({ 
-        emergencyContact1: emergencyData.emergencyContact2,
-        emergencyContact2: ''
-      });
-    } else {
-      updateEmergencyData({ emergencyContact2: '' });
-    }
-  };
-
-  const additionalContacts = [
-    emergencyData.emergencyContact1,
-    emergencyData.emergencyContact2
-  ].filter(Boolean);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 pb-20">
+    <div className="min-h-screen bg-gray-50 p-4 pb-20">
       <div className="max-w-2xl mx-auto pt-8">
-        <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => onNavigate('/')}
-              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-              aria-label="Go back to emergency trigger"
-            >
-              <ArrowLeft className="w-5 h-5 text-slate-600" />
-            </button>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-4">
+            <div className="flex justify-center">
+              <div className="bg-red-50 p-3 rounded-full">
+                <AlertCircle className="w-6 h-6 text-red-500" />
+              </div>
+            </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">Emergency Details</h1>
-              <p className="text-slate-600">Provide information to help authorities respond</p>
+              <h1 className="text-2xl font-bold text-gray-900">Emergency Details</h1>
+              <p className="text-gray-600 mt-1">Provide information to help authorities respond effectively</p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="situationType" className="block text-sm font-semibold text-slate-700 mb-2">
-                Situation Type *
-              </label>
-              <select
-                id="situationType"
-                value={emergencyData.situationType}
-                onChange={(e) => updateEmergencyData({ situationType: e.target.value })}
-                className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg"
-                required
-              >
-                <option value="">Select situation type</option>
-                <option value="Intruder">Intruder</option>
-                <option value="Medical">Medical Emergency</option>
-                <option value="Domestic Abuse">Domestic Abuse</option>
-                <option value="Fire">Fire</option>
-                <option value="Other">Other</option>
-              </select>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Emergency Type */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="w-5 h-5 text-gray-500" />
+                <label className="text-sm font-medium text-gray-700">
+                  What type of emergency is this?
+                </label>
+              </div>
+              <div className="relative">
+                <select
+                  value={emergencyData.situationType}
+                  onChange={(e) => updateEmergencyData({ situationType: e.target.value })}
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900"
+                  required
+                >
+                  <option value="">Select emergency type...</option>
+                  <option value="Intruder">Intruder</option>
+                  <option value="Medical">Medical Emergency</option>
+                  <option value="Domestic Abuse">Domestic Abuse</option>
+                  <option value="Fire">Fire</option>
+                  <option value="Other">Other</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
+            {/* Location */}
             <LocationPicker
               initialLocation={emergencyData.location}
               onLocationChange={handleLocationChange}
             />
 
-            <div>
-              <label htmlFor="description" className="block text-sm font-semibold text-slate-700 mb-2">
-                Situation Description *
-              </label>
-              <textarea
-                id="description"
-                value={emergencyData.description}
-                onChange={(e) => updateEmergencyData({ description: e.target.value })}
-                placeholder="Describe what's happening in detail..."
-                rows={4}
-                className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg resize-none"
-                required
-              />
+            {/* Number of Threats */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Users className="w-5 h-5 text-gray-500" />
+                <label className="text-sm font-medium text-gray-700">
+                  Number of threats (if applicable)
+                </label>
+              </div>
+              <div className="relative">
+                <select
+                  value={emergencyData.numberOfThreats}
+                  onChange={(e) => updateEmergencyData({ numberOfThreats: e.target.value })}
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900"
+                >
+                  <option value="">Select if applicable...</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5+">5+</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="callNumber" className="block text-sm font-semibold text-slate-700 mb-2">
-                <div className="flex items-center space-x-1">
-                  <Phone className="w-4 h-4" />
-                  <span>Emergency Call Number *</span>
-                </div>
-              </label>
+            {/* Emergency Call Number */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Phone className="w-5 h-5 text-gray-500" />
+                <label className="text-sm font-medium text-gray-700">
+                  Emergency Call Number <span className="text-red-500">*</span>
+                </label>
+              </div>
               <input
-                id="callNumber"
                 type="tel"
                 value={emergencyData.callNumber}
                 onChange={(e) => handlePhoneChange('callNumber', e.target.value)}
-                placeholder="+919800374139"
-                className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 required
               />
-              <p className="text-xs text-slate-500 mt-1">Format: +919800374139</p>
+              <p className="text-sm text-gray-500">Format: +CountryCode followed by phone number (e.g., +919800374139)</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Additional Emergency Contacts (Optional)
-              </label>
-              <p className="text-xs text-slate-600 mb-3">Add up to 2 additional contacts who will receive text alerts</p>
-              
-              {additionalContacts.map((contact, index) => (
-                <div key={index} className="flex items-center space-x-2 mb-2">
-                  <div className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-700">
-                    {contact}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeAdditionalContact((index + 1) as 1 | 2)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    aria-label="Remove contact"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+            {/* Additional Emergency Contacts */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Phone className="w-5 h-5 text-gray-500" />
+                  <label className="text-sm font-medium text-gray-700">
+                    Additional Emergency Contacts (Optional)
+                  </label>
                 </div>
-              ))}
-              
-              {additionalContacts.length < 2 && (
-                <div className="flex space-x-2">
-                  <input
-                    type="tel"
-                    value={additionalContactInput}
-                    onChange={(e) => handleAdditionalContactChange(e.target.value)}
-                    placeholder="+919800374139"
-                    className="flex-1 p-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none"
-                  />
+                {!showAdditionalContacts ? (
                   <button
                     type="button"
-                    onClick={addAdditionalContact}
-                    disabled={!additionalContactInput}
-                    className="bg-slate-600 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white p-3 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-slate-300"
-                    aria-label="Add additional contact"
+                    onClick={() => setShowAdditionalContacts(true)}
+                    className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors flex items-center space-x-1"
                   >
-                    <Plus className="w-5 h-5" />
+                    <span>+</span>
+                    <span>Add Contacts</span>
                   </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowAdditionalContacts(false)}
+                    className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors flex items-center space-x-1"
+                  >
+                    <span>×</span>
+                    <span>Hide</span>
+                  </button>
+                )}
+              </div>
+
+              {showAdditionalContacts && (
+                <div className="space-y-4 pt-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Emergency Contact 1
+                    </label>
+                    <input
+                      type="tel"
+                      value={emergencyData.emergencyContact1}
+                      onChange={(e) => handlePhoneChange('emergencyContact1', e.target.value)}
+                      placeholder="+1234567890"
+                      className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Emergency Contact 2
+                    </label>
+                    <input
+                      type="tel"
+                      value={emergencyData.emergencyContact2}
+                      onChange={(e) => handlePhoneChange('emergencyContact2', e.target.value)}
+                      placeholder="+1234567890"
+                      className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                    />
+                  </div>
+                  
+                  <p className="text-sm text-gray-500">
+                    These contacts will receive SMS notifications about your emergency
+                  </p>
                 </div>
               )}
             </div>
 
-            <div>
-              <label htmlFor="numberOfThreats" className="block text-sm font-semibold text-slate-700 mb-2">
-                Number of Threats
-              </label>
-              <select
-                id="numberOfThreats"
-                value={emergencyData.numberOfThreats}
-                onChange={(e) => updateEmergencyData({ numberOfThreats: e.target.value })}
-                className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg"
-              >
-                <option value="">Unknown</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5+">5+</option>
-              </select>
+            {/* What's Happening */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <MessageSquare className="w-5 h-5 text-gray-500" />
+                <label className="text-sm font-medium text-gray-700">
+                  What's happening?
+                </label>
+              </div>
+              <textarea
+                value={emergencyData.description}
+                onChange={(e) => updateEmergencyData({ description: e.target.value })}
+                placeholder="Type what's happening... Be as specific as possible"
+                rows={4}
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-400"
+                required
+              />
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading || !emergencyData.situationType || !emergencyData.description || !emergencyData.callNumber}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xl font-semibold py-4 px-6 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300"
+              className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-lg font-semibold py-4 px-6 rounded-lg shadow-sm transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-red-300"
             >
               <div className="flex items-center justify-center space-x-3">
                 {isLoading ? (
-                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <RefreshCw className="w-5 h-5 animate-spin" />
                 ) : (
-                  <Send className="w-6 h-6" />
+                  <Phone className="w-5 h-5" />
                 )}
-                <span>{isLoading ? 'Processing with AI...' : 'Call SOS Now'}</span>
+                <span>{isLoading ? 'Processing...' : 'Call SOS Now'}</span>
               </div>
             </button>
           </form>
