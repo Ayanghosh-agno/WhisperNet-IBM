@@ -314,9 +314,15 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                     </label>
                     <p className="text-gray-900">{sessionData.location}</p>
                     {(sessionData.location_lat && sessionData.location_long) && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        {sessionData.location_lat}, {sessionData.location_long}
-                      </p>
+                      <a
+                        href={`https://www.google.com/maps?q=${sessionData.location_lat},${sessionData.location_long}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800 mt-1 transition-colors"
+                      >
+                        <MapPin className="w-3 h-3" />
+                        <span>View on Map</span>
+                      </a>
                     )}
                   </div>
                   
