@@ -2,6 +2,9 @@ export interface EmergencyData {
   situationType: string;
   location: string;
   description: string;
+  situationDescription: string;
+  emergencyContact: string;
+  additionalContacts: string[];
   numberOfThreats: string;
   timestamp: Date;
   coordinates?: {

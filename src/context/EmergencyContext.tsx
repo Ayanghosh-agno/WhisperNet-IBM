@@ -79,9 +79,13 @@ export const EmergencyProvider: React.FC<EmergencyProviderProps> = ({ children }
   };
 
   const generateAISummary = (data: EmergencyData): string => {
-    const { situationType, location, description, numberOfThreats } = data;
+    const { situationType, location, situationDescription, numberOfThreats, emergencyContact, additionalContacts } = data;
     
-    return `Emergency Alert: ${situationType} situation reported at ${location}. ${description} Number of individuals involved: ${numberOfThreats}. Immediate assistance requested. Please respond with priority dispatch.`;
+    const contactInfo = additionalContacts.length > 0 
+      ? ` Additional contacts to notify: ${additionalContacts.join(', ')}.`
+      : '';
+    
+    return `Emergency Alert: ${situationType} situation reported at ${location}. ${situationDescription} Number of individuals involved: ${numberOfThreats || 'Unknown'}. Emergency contact: ${emergencyContact}.${contactInfo} Immediate assistance requested. Please respond with priority dispatch.`;
   };
 
   const value: EmergencyContextType = {

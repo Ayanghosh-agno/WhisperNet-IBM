@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, Plus, X, Phone } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { EmergencyData } from '../types/emergency';
 import { LocationPicker } from './LocationPicker';
@@ -15,13 +15,17 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
     situationType: '',
     location: '',
     description: '',
+    situationDescription: '',
+    emergencyContact: '',
+    additionalContacts: [],
     numberOfThreats: '',
     timestamp: new Date(),
   });
+  const [additionalContactInput, setAdditionalContactInput] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.situationType || !formData.description) return;
+    if (!formData.situationType || !formData.situationDescription || !formData.emergencyContact) return;
 
     setIsLoading(true);
     submitEmergencyData(formData);
@@ -39,6 +43,43 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
 
   const handleLocationChange = (locationData: { address: string; latitude: number; longitude: number }) => {
     setFormData(prev => ({ ...prev, location: locationData.address }));
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, '');
+    
+    // Format as +919800374139
+    if (digits.length <= 12) {
+      return `+${digits}`;
+    }
+    return `+${digits.slice(0, 12)}`;
+  };
+
+  const handlePhoneChange = (field: 'emergencyContact', value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setFormData(prev => ({ ...prev, [field]: formatted }));
+  };
+
+  const handleAdditionalContactChange = (value: string) => {
+    setAdditionalContactInput(formatPhoneNumber(value));
+  };
+
+  const addAdditionalContact = () => {
+    if (additionalContactInput && formData.additionalContacts.length < 2) {
+      setFormData(prev => ({
+        ...prev,
+        additionalContacts: [...prev.additionalContacts, additionalContactInput]
+      }));
+      setAdditionalContactInput('');
+    }
+  };
+
+  const removeAdditionalContact = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      additionalContacts: prev.additionalContacts.filter((_, i) => i !== index)
+    }));
   };
 
   return (
@@ -84,6 +125,85 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
               initialLocation={formData.location}
               onLocationChange={handleLocationChange}
             />
+
+            <div>
+              <label htmlFor="situationDescription" className="block text-sm font-semibold text-slate-700 mb-2">
+                Situation Description *
+              </label>
+              <textarea
+                id="situationDescription"
+                value={formData.situationDescription}
+                onChange={(e) => handleInputChange('situationDescription', e.target.value)}
+                placeholder="Describe what's happening in detail..."
+                rows={4}
+                className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg resize-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="emergencyContact" className="block text-sm font-semibold text-slate-700 mb-2">
+                <div className="flex items-center space-x-1">
+                  <Phone className="w-4 h-4" />
+                  <span>Emergency Contact Number *</span>
+                </div>
+              </label>
+              <input
+                id="emergencyContact"
+                type="tel"
+                value={formData.emergencyContact}
+                onChange={(e) => handlePhoneChange('emergencyContact', e.target.value)}
+                placeholder="+919800374139"
+                className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg"
+                required
+              />
+              <p className="text-xs text-slate-500 mt-1">Format: +919800374139</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Additional Emergency Contacts (Optional)
+              </label>
+              <p className="text-xs text-slate-600 mb-3">Add up to 2 additional contacts who will receive text alerts</p>
+              
+              {formData.additionalContacts.map((contact, index) => (
+                <div key={index} className="flex items-center space-x-2 mb-2">
+                  <div className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-700">
+                    {contact}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeAdditionalContact(index)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    aria-label="Remove contact"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              
+              {formData.additionalContacts.length < 2 && (
+                <div className="flex space-x-2">
+                  <input
+                    type="tel"
+                    value={additionalContactInput}
+                    onChange={(e) => handleAdditionalContactChange(e.target.value)}
+                    placeholder="+919800374139"
+                    className="flex-1 p-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={addAdditionalContact}
+                    disabled={!additionalContactInput}
+                    className="bg-slate-600 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white p-3 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-slate-300"
+                    aria-label="Add additional contact"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div>
               <label htmlFor="numberOfThreats" className="block text-sm font-semibold text-slate-700 mb-2">
                 Number of Threats
@@ -105,7 +225,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
 
             <button
               type="submit"
-              disabled={isLoading || !formData.situationType || !formData.description}
+              disabled={isLoading || !formData.situationType || !formData.situationDescription || !formData.emergencyContact}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xl font-semibold py-4 px-6 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300"
             >
               <div className="flex items-center justify-center space-x-3">
@@ -114,7 +234,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
                 ) : (
                   <Send className="w-6 h-6" />
                 )}
-                <span>{isLoading ? 'Processing with AI...' : 'Send to AI Agent'}</span>
+                <span>{isLoading ? 'Processing with AI...' : 'Call SOS Now'}</span>
               </div>
             </button>
           </form>
