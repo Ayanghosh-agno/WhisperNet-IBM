@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, AlertTriangle } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
-const PanicTrigger: React.FC = () => {
+export const EmergencyTrigger: React.FC = () => {
   const navigate = useNavigate();
   const { startEmergency } = useEmergency();
 
@@ -57,5 +57,3 @@ const PanicTrigger: React.FC = () => {
     </div>
   );
 };
-
-export default PanicTrigger;
