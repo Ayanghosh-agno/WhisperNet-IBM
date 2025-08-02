@@ -3,6 +3,7 @@ import { Send, ArrowLeft } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { EmergencyData } from '../types/emergency';
 import { LocationPicker } from './LocationPicker';
+import { LocationPicker } from './LocationPicker';
 
 interface EmergencyFormProps {
   onNavigate: (route: string) => void;
@@ -35,6 +36,17 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
 
   const handleInputChange = (field: keyof EmergencyData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleLocationChange = (locationData: { address: string; latitude: number; longitude: number }) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      location: locationData.address,
+      coordinates: {
+        latitude: locationData.latitude,
+        longitude: locationData.longitude
+      }
+    }));
   };
 
   const handleLocationChange = (locationData: { address: string; latitude: number; longitude: number }) => {
@@ -85,19 +97,10 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
               onLocationChange={handleLocationChange}
             />
 
-            <div>
-              <label htmlFor="description" className="block text-sm font-semibold text-slate-700 mb-2">
-                Description *
-              </label>
-              <textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                className="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none text-lg h-32 resize-none"
-                placeholder="Type what's happening..."
-                required
-              />
-            </div>
+            <LocationPicker
+              initialLocation={formData.location}
+              onLocationChange={handleLocationChange}
+            />
 
             <div>
               <label htmlFor="numberOfThreats" className="block text-sm font-semibold text-slate-700 mb-2">
