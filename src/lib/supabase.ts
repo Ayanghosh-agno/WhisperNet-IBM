@@ -31,3 +31,4 @@ export interface SOSMessage {
   message: string;
   created_at?: string;
   sent_to_responder?: boolean;
+}
