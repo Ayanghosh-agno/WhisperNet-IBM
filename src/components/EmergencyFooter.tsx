@@ -3,34 +3,25 @@ import { MapPin, Clock } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
 export const EmergencyFooter: React.FC = () => {
-  const { state } = useEmergency();
+  const { isEmergencyActive, emergencyData, elapsedTime } = useEmergency();
   const [location, setLocation] = useState<string>('Location not set');
-  const [elapsedTime, setElapsedTime] = useState<string>('00:00');
 
   useEffect(() => {
-    if (state.isActive && state.data?.location) {
+    if (isEmergencyActive && emergencyData.locationName) {
       // Extract just the city/area from the full address for footer display
-      const parts = state.data.location.split(',');
-      const shortLocation = parts.length > 2 ? `${parts[0]}, ${parts[1]}` : state.data.location;
+      const parts = emergencyData.locationName.split(',');
+      const shortLocation = parts.length > 2 ? `${parts[0]}, ${parts[1]}` : emergencyData.locationName;
       setLocation(shortLocation);
     }
-  }, [state.isActive, state.data?.location]);
+  }, [isEmergencyActive, emergencyData.locationName]);
 
-  useEffect(() => {
-    if (!state.startTime) return;
+  const formatElapsedTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
-    const interval = setInterval(() => {
-      const now = new Date();
-      const diff = now.getTime() - state.startTime!.getTime();
-      const minutes = Math.floor(diff / 60000);
-      const seconds = Math.floor((diff % 60000) / 1000);
-      setElapsedTime(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [state.startTime]);
-
-  if (!state.isActive) return null;
+  if (!isEmergencyActive) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-red-600 text-white p-4 shadow-lg">
@@ -42,7 +33,7 @@ export const EmergencyFooter: React.FC = () => {
           </div>
           <div className="flex items-center space-x-1">
             <Clock size={16} />
-            <span>{elapsedTime}</span>
+            <span>{formatElapsedTime(elapsedTime)}</span>
           </div>
         </div>
         <div className="flex items-center space-x-1">

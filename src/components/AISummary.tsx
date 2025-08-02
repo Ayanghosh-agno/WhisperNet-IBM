@@ -7,17 +7,37 @@ interface AISummaryProps {
 }
 
 export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
-  const { state } = useEmergency();
+  const { emergencyData, initiateSOSCall, startCallStatusMonitoring } = useEmergency();
 
-  const handleMakeCall = () => {
-    // In a real app, this would trigger the backend API to make the call
-    console.log('Making emergency call with AI summary:', state.aiSummary);
-    onNavigate('/chat');
+  const generateAISummary = (): string => {
+    const { situationType, locationName, description, numberOfThreats, callNumber, emergencyContact1, emergencyContact2 } = emergencyData;
+    
+    const contactInfo = [emergencyContact1, emergencyContact2].filter(Boolean);
+    const additionalContactsText = contactInfo.length > 0 
+      ? ` Additional contacts to notify: ${contactInfo.join(', ')}.`
+      : '';
+    
+    const threatInfo = numberOfThreats ? ` Number of individuals involved: ${numberOfThreats}.` : '';
+    
+    return `Emergency Alert: ${situationType} situation reported at ${locationName || 'location provided'}. ${description}${threatInfo} Emergency contact: ${callNumber}.${additionalContactsText} Silent communication in progress. Immediate assistance requested.`;
+  };
+
+  const handleMakeCall = async () => {
+    const success = await initiateSOSCall();
+    if (success) {
+      startCallStatusMonitoring();
+      onNavigate('/chat');
+    } else {
+      // Handle error - could show an error message
+      console.error('Failed to initiate SOS call');
+    }
   };
 
   const handleEditMessage = () => {
     onNavigate('/form');
   };
+
+  const aiSummary = generateAISummary();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 pb-20">
@@ -46,7 +66,7 @@ export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
                 </h3>
                 <div className="bg-white p-4 rounded-lg border shadow-sm">
                   <p className="text-slate-800 leading-relaxed">
-                    {state.aiSummary || 'Generating AI summary...'}
+                    {aiSummary}
                   </p>
                 </div>
               </div>
