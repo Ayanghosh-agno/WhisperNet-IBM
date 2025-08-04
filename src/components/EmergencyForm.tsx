@@ -14,7 +14,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!emergencyData.situationType || !emergencyData.description || !emergencyData.callNumber) return;
+    if (!emergencyData.description || !emergencyData.callNumber) return;
 
     setIsLoading(true);
     
