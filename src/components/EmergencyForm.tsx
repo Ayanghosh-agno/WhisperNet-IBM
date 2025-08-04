@@ -236,7 +236,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading || !emergencyData.situationType || !emergencyData.description || !emergencyData.callNumber}
+              disabled={isLoading || !emergencyData.description || !emergencyData.callNumber}
               className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-lg font-semibold py-4 px-6 rounded-lg shadow-sm transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-red-300"
             >
               <div className="flex items-center justify-center space-x-3">
