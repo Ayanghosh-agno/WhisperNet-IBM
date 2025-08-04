@@ -77,7 +77,7 @@ export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-500">Type:</span>
-                <span className="ml-2 font-medium text-gray-900">{emergencyData.situationType || 'Not specified'}</span>
+                <span className="ml-2 font-medium text-gray-900">{emergencyData.situationType || 'General Emergency'}</span>
               </div>
               <div>
                 <span className="text-gray-500">Location:</span>
