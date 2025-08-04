@@ -80,7 +80,6 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
                   value={emergencyData.situationType}
                   onChange={(e) => updateEmergencyData({ situationType: e.target.value })}
                   className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900"
-                  required
                 >
                   <option value="">Select emergency type...</option>
                   <option value="Intruder">Intruder</option>
