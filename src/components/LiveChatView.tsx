@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Clock, MapPin, Users, AlertCircle, Bot, User, Headphones, Shield, Send, MessageCircle, ExternalLink } from 'lucide-react';
+import { Eye, Clock, MapPin, Users, AlertCircle, Bot, User, Headphones, Shield, Send, MessageCircle, ExternalLink, Loader2 } from 'lucide-react';
 import { supabase, SOSSession, SOSMessage } from '../lib/supabase';
 
 interface LiveChatViewProps {
@@ -332,7 +332,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center bg-white rounded-2xl shadow-xl p-8 max-w-md mx-auto">
-          <div className="w-12 h-12 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-6" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Loading Emergency Session</h2>
           <p className="text-gray-600">Connecting to live monitoring dashboard...</p>
         </div>
