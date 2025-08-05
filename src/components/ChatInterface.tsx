@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Volume2, Mic, Phone, Home, Bot, NutOff as BotOff, Headphones } from 'lucide-react';
+import { Send, Volume2, Phone, Home, Bot, NutOff as BotOff, Headphones } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { supabase, WhisprMessage } from '../lib/supabase';
 
@@ -400,12 +400,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
       {/* Input Area */}
       <div className="bg-white border-t border-gray-200 p-4 relative z-10">
         <div className="flex items-center space-x-2">
-          <button
-            className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
-            title="Voice message"
-          >
-            <Mic className="w-5 h-5" />
-          </button>
           <div className="flex-1 relative">
             <input
               type="text"
