@@ -611,7 +611,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
 
           {/* Enhanced Chat Messages Panel */}
           <div className="bp788:col-span-3">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] flex flex-col overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 h-[calc(100vh-120px)] bp788:h-[calc(100vh-200px)] flex flex-col overflow-hidden">
               {/* Enhanced Chat Header */}
               <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 border-b border-gray-200">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
