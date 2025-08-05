@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Clock, MapPin, Users, AlertCircle, Bot, User, Headphones, Shield, Send, MessageCircle } from 'lucide-react';
+import { Eye, Clock, MapPin, Users, AlertCircle, Bot, User, Headphones, Shield, Send, MessageCircle, ExternalLink } from 'lucide-react';
 import { supabase, SOSSession, SOSMessage } from '../lib/supabase';
 
 interface LiveChatViewProps {
@@ -50,6 +50,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
   useEffect(() => {
     aiMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [aiMessages]);
+
   // Fetch session data and messages
   useEffect(() => {
     const fetchSessionData = async () => {
@@ -181,15 +182,15 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
   const getMessageStyle = (message: Message) => {
     switch (message.source_type) {
       case 'user':
-        return 'bg-blue-600 text-white';
+        return 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg';
       case 'ai':
-        return 'bg-green-100 text-green-800 border border-green-200';
+        return 'bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm';
       case 'responder':
-        return 'bg-white text-gray-800 shadow-sm border border-gray-200';
+        return 'bg-white text-gray-800 shadow-md border border-gray-200';
       case 'system':
-        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+        return 'bg-gradient-to-r from-amber-50 to-amber-100 text-amber-800 border border-amber-200 shadow-sm';
       default:
-        return 'bg-white text-gray-800 shadow-sm border border-gray-200';
+        return 'bg-white text-gray-800 shadow-md border border-gray-200';
     }
   };
 
@@ -224,21 +225,21 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
   };
 
   const getCallStatusColor = () => {
-    if (!sessionData) return 'text-gray-500';
+    if (!sessionData) return 'text-gray-500 bg-gray-100';
     
     switch (sessionData.callStatus) {
       case 'ringing':
-        return 'text-orange-600';
+        return 'text-orange-700 bg-orange-100 border-orange-200';
       case 'queued':
-        return 'text-yellow-600';
+        return 'text-yellow-700 bg-yellow-100 border-yellow-200';
       case 'in-progress':
-        return 'text-green-600';
+        return 'text-green-700 bg-green-100 border-green-200';
       case 'completed':
-        return 'text-blue-600';
+        return 'text-blue-700 bg-blue-100 border-blue-200';
       case 'failed':
-        return 'text-red-600';
+        return 'text-red-700 bg-red-100 border-red-200';
       default:
-        return 'text-gray-600';
+        return 'text-gray-700 bg-gray-100 border-gray-200';
     }
   };
 
@@ -247,17 +248,17 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
     
     switch (sessionData.callStatus) {
       case 'ringing':
-        return 'Calling';
+        return 'Calling Emergency Services';
       case 'queued':
-        return 'Queued';
+        return 'Call Queued';
       case 'in-progress':
-        return 'Active Call';
+        return 'Active Emergency Call';
       case 'completed':
-        return 'Completed';
+        return 'Call Completed';
       case 'failed':
-        return 'Failed';
+        return 'Call Failed';
       default:
-        return sessionData.callStatus || 'Unknown';
+        return sessionData.callStatus || 'Unknown Status';
     }
   };
 
@@ -329,10 +330,11 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading emergency session...</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center bg-white rounded-2xl shadow-xl p-8 max-w-md mx-auto">
+          <div className="w-12 h-12 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Loading Emergency Session</h2>
+          <p className="text-gray-600">Connecting to live monitoring dashboard...</p>
         </div>
       </div>
     );
@@ -340,46 +342,56 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">Access Error</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <p className="text-sm text-gray-500">
-            Please verify the session ID and ensure you have proper access permissions.
-          </p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-8 bg-white rounded-2xl shadow-xl">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Access Error</h1>
+          <p className="text-gray-600 mb-6 leading-relaxed">{error}</p>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-500">
+              Please verify the session ID and ensure you have proper access permissions.
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200 p-4">
-        <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
+      {/* Enhanced Header */}
+      <div className="bg-white shadow-lg border-b border-gray-200">
+        <div className="max-w-7xl mx-auto p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <Eye className="w-5 h-5 text-red-600" />
+              <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <Eye className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Live Emergency Monitor</h1>
-                <p className="text-sm text-gray-500">Session: {sessionId}</p>
+                <h1 className="text-2xl font-bold text-gray-900">Live Emergency Monitor</h1>
+                <div className="flex items-center space-x-3 mt-1">
+                  <span className="text-sm text-gray-500">Session ID:</span>
+                  <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-700">{sessionId}</code>
+                </div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${getCallStatusColor()} bg-opacity-10`}>
-                <div className={`w-2 h-2 rounded-full ${getCallStatusColor().replace('text-', 'bg-')} ${
-                  sessionData?.callStatus === 'in-progress' ? 'animate-pulse' : ''
+            <div className="flex items-center space-x-6">
+              <div className={`flex items-center space-x-3 px-4 py-2 rounded-xl border ${getCallStatusColor()}`}>
+                <div className={`w-3 h-3 rounded-full ${
+                  sessionData?.callStatus === 'in-progress' ? 'bg-green-500 animate-pulse' : 
+                  sessionData?.callStatus === 'ringing' ? 'bg-orange-500 animate-bounce' :
+                  'bg-current'
                 }`}></div>
-                <span>{getCallStatusText()}</span>
+                <span className="font-semibold">{getCallStatusText()}</span>
               </div>
               
               {sessionData?.created_at && (
-                <div className="text-sm text-gray-500">
-                  Started: {formatDate(new Date(sessionData.created_at))}
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-700">Session Started</div>
+                  <div className="text-sm text-gray-500">{formatDate(new Date(sessionData.created_at))}</div>
                 </div>
               )}
             </div>
@@ -387,94 +399,103 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-4">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Emergency Details Panel */}
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+          {/* Enhanced Emergency Details Panel */}
           <div className="xl:col-span-1 space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                <AlertCircle className="w-5 h-5 text-red-600" />
-                <span>Emergency Details</span>
-              </h2>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-red-50 to-red-100 p-6 border-b border-red-200">
+                <h2 className="text-xl font-bold text-red-900 flex items-center space-x-3">
+                  <AlertCircle className="w-6 h-6" />
+                  <span>Emergency Details</span>
+                </h2>
+              </div>
               
               {sessionData && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Situation Type</label>
-                    <p className="text-gray-900 font-medium">{sessionData.situation}</p>
+                <div className="p-6 space-y-6">
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Situation Type</label>
+                    <p className="text-lg font-bold text-gray-900 mt-1">{sessionData.situation}</p>
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium text-gray-500 flex items-center space-x-1">
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide flex items-center space-x-2">
                       <MapPin className="w-4 h-4" />
                       <span>Location</span>
                     </label>
-                    <p className="text-gray-900">{sessionData.location}</p>
+                    <p className="text-gray-900 mt-2 leading-relaxed">{sessionData.location}</p>
                     {(sessionData.location_lat && sessionData.location_long) && (
                       <a
                         href={`https://www.google.com/maps?q=${sessionData.location_lat},${sessionData.location_long}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800 mt-1 transition-colors"
+                        className="inline-flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 mt-3 font-medium transition-colors group"
                       >
-                        <MapPin className="w-3 h-3" />
-                        <span>View on Map</span>
+                        <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        <span>View on Google Maps</span>
                       </a>
                     )}
                   </div>
                   
                   {sessionData.number_of_threat > 0 && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500 flex items-center space-x-1">
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide flex items-center space-x-2">
                         <Users className="w-4 h-4" />
                         <span>Number of Threats</span>
                       </label>
-                      <p className="text-gray-900 font-medium">{sessionData.number_of_threat}</p>
+                      <p className="text-2xl font-bold text-red-600 mt-1">{sessionData.number_of_threat}</p>
                     </div>
                   )}
                   
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">AI Guide</label>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <div className={`w-2 h-2 rounded-full ${
-                        sessionData.ai_guide_enabled ? 'bg-green-500' : 'bg-gray-400'
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide">AI Guide Status</label>
+                    <div className="flex items-center space-x-3 mt-2">
+                      <div className={`w-3 h-3 rounded-full ${
+                        sessionData.ai_guide_enabled ? 'bg-green-500 shadow-green-200 shadow-lg' : 'bg-gray-400'
                       }`}></div>
-                      <span className="text-sm text-gray-900">
-                        {sessionData.ai_guide_enabled ? 'Enabled' : 'Disabled'}
+                      <span className={`text-sm font-medium ${
+                        sessionData.ai_guide_enabled ? 'text-green-700' : 'text-gray-600'
+                      }`}>
+                        {sessionData.ai_guide_enabled ? 'Active & Assisting' : 'Disabled'}
                       </span>
                     </div>
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium text-gray-500 flex items-center space-x-1">
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <label className="text-sm font-semibold text-gray-600 uppercase tracking-wide flex items-center space-x-2">
                       <Clock className="w-4 h-4" />
-                      <span>Session Started</span>
+                      <span>Session Timeline</span>
                     </label>
-                    <p className="text-gray-900">{formatDate(new Date(sessionData.created_at || Date.now()))}</p>
+                    <p className="text-gray-900 mt-2 font-medium">{formatDate(new Date(sessionData.created_at || Date.now()))}</p>
                   </div>
                 </div>
               )}
             </div>
             
-            {/* AI Assistant Panel */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-              <div className="p-4 border-b border-gray-200">
+            {/* Enhanced AI Assistant Panel */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-100 p-4 border-b border-blue-200">
                 <button
                   onClick={() => setShowAIChat(!showAIChat)}
-                  className="w-full flex items-center justify-between text-left"
+                  className="w-full flex items-center justify-between text-left group"
                 >
-                  <div className="flex items-center space-x-2">
-                    <Bot className="w-5 h-5 text-blue-600" />
-                    <span className="text-lg font-semibold text-gray-900">AI Assistant</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <Bot className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-lg font-bold text-blue-900">AI Emergency Assistant</span>
+                      <p className="text-sm text-blue-700">Ask questions about this emergency</p>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3">
                     {aiMessages.length > 0 && (
-                      <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                      <span className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full font-semibold shadow-sm">
                         {aiMessages.length}
                       </span>
                     )}
                     <svg 
-                      className={`w-4 h-4 text-gray-400 transition-transform ${showAIChat ? 'rotate-180' : ''}`} 
+                      className={`w-5 h-5 text-blue-600 transition-transform group-hover:scale-110 ${showAIChat ? 'rotate-180' : ''}`} 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -483,60 +504,67 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                     </svg>
                   </div>
                 </button>
-                <p className="text-sm text-gray-500 mt-1">Ask questions about this emergency</p>
               </div>
               
               {showAIChat && (
-                <div className="p-4 space-y-4">
-                  {/* Suggested Questions */}
+                <div className="p-6 space-y-6">
+                  {/* Enhanced Suggested Questions */}
                   {aiMessages.length === 0 && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-700">Quick questions:</p>
-                      <div className="space-y-1">
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <MessageCircle className="w-5 h-5 text-blue-600" />
+                        <p className="text-sm font-semibold text-gray-800">Quick Questions</p>
+                      </div>
+                      <div className="grid gap-2">
                         {suggestedQuestions.map((question, index) => (
                           <button
                             key={index}
                             onClick={() => setAiQuestion(question)}
-                            className="w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                            className="w-full text-left text-sm text-blue-700 hover:text-blue-900 hover:bg-blue-50 p-3 rounded-xl transition-all duration-200 border border-blue-100 hover:border-blue-200 hover:shadow-sm group"
                           >
-                            {question}
+                            <div className="flex items-center space-x-2">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full group-hover:bg-blue-600 transition-colors"></div>
+                              <span className="font-medium">{question}</span>
+                            </div>
                           </button>
                         ))}
                       </div>
                     </div>
                   )}
                   
-                  {/* AI Chat Messages */}
+                  {/* Enhanced AI Chat Messages */}
                   {aiMessages.length > 0 && (
-                    <div className="max-h-48 overflow-y-auto space-y-3 mb-4">
+                    <div className="max-h-64 overflow-y-auto space-y-4 mb-4 pr-2">
                       {aiMessages.map((aiMsg) => (
-                        <div key={aiMsg.id} className="space-y-2">
+                        <div key={aiMsg.id} className="space-y-3">
                           {/* Question */}
                           <div className="flex justify-end">
-                            <div className="bg-blue-600 text-white px-3 py-2 rounded-lg max-w-xs">
-                              <p className="text-sm">{aiMsg.question}</p>
-                              <p className="text-xs text-blue-100 mt-1">{formatTime(aiMsg.timestamp)}</p>
+                            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-2xl max-w-xs shadow-lg">
+                              <p className="text-sm font-medium">{aiMsg.question}</p>
+                              <p className="text-xs text-blue-100 mt-2">{formatTime(aiMsg.timestamp)}</p>
                             </div>
                           </div>
                           
                           {/* Reply */}
                           <div className="flex justify-start">
-                            <div className="bg-gray-100 text-gray-800 px-3 py-2 rounded-lg max-w-xs">
-                              <div className="flex items-center space-x-1 mb-1">
-                                <Bot className="w-3 h-3 text-blue-600" />
-                                <span className="text-xs font-medium text-gray-500">AI Assistant</span>
+                            <div className="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-800 px-4 py-3 rounded-2xl max-w-xs shadow-md border border-gray-200">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+                                  <Bot className="w-3 h-3 text-white" />
+                                </div>
+                                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">AI Assistant</span>
                               </div>
                               {aiMsg.isLoading ? (
-                                <div className="flex items-center space-x-2">
+                                <div className="flex items-center space-x-3">
                                   <div className="flex space-x-1">
-                                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
-                                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                                   </div>
-                                  <span className="text-sm text-gray-600">Analyzing emergency data...</span>
+                                  <span className="text-sm text-blue-700 font-medium">Analyzing emergency data...</span>
                                 </div>
                               ) : (
-                                <p className="text-sm">{aiMsg.reply}</p>
+                                <p className="text-sm leading-relaxed">{aiMsg.reply}</p>
                               )}
                             </div>
                           </div>
@@ -546,32 +574,34 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                     </div>
                   )}
                   
-                  {/* AI Input */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        value={aiQuestion}
-                        onChange={(e) => setAiQuestion(e.target.value)}
-                        onKeyPress={handleAIKeyPress}
-                        placeholder="Ask about this emergency..."
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                        disabled={isAskingAI}
-                      />
+                  {/* Enhanced AI Input */}
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-1 relative">
+                        <input
+                          type="text"
+                          value={aiQuestion}
+                          onChange={(e) => setAiQuestion(e.target.value)}
+                          onKeyPress={handleAIKeyPress}
+                          placeholder="Ask about this emergency..."
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-all duration-200"
+                          disabled={isAskingAI}
+                        />
+                      </div>
                       <button
                         onClick={handleAskAI}
                         disabled={!aiQuestion.trim() || isAskingAI}
-                        className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+                        className="p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
                       >
                         {isAskingAI ? (
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         ) : (
-                          <Send className="w-4 h-4" />
+                          <Send className="w-5 h-5" />
                         )}
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500">
-                      Ask the AI assistant about the emergency situation, location, or what actions to take.
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                      Get instant AI-powered insights about the emergency situation, location details, or recommended actions.
                     </p>
                   </div>
                 </div>
@@ -579,26 +609,42 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
             </div>
           </div>
 
-          {/* Chat Messages Panel */}
-          <div className="xl:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-[calc(100vh-180px)] flex flex-col">
-              {/* Chat Header */}
-              <div className="p-4 border-b border-gray-200">
+          {/* Enhanced Chat Messages Panel */}
+          <div className="xl:col-span-3">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 h-[calc(100vh-200px)] flex flex-col overflow-hidden">
+              {/* Enhanced Chat Header */}
+              <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">Live Conversation</h2>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-gray-600">Live</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                      <MessageCircle className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900">Live Conversation</h2>
+                      <p className="text-sm text-gray-600">Real-time emergency communication</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2 bg-green-100 px-3 py-2 rounded-lg">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-semibold text-green-700">Live</span>
+                    </div>
+                    <div className="text-sm text-gray-500 bg-gray-100 px-3 py-2 rounded-lg">
+                      {messages.length} message{messages.length !== 1 ? 's' : ''}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Enhanced Messages Area */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
                 {messages.length === 0 ? (
-                  <div className="text-center text-gray-500 py-8">
-                    <Eye className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>No messages yet. Monitoring for activity...</p>
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Eye className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Monitoring Active</h3>
+                    <p className="text-gray-500">Waiting for emergency communication to begin...</p>
                   </div>
                 ) : (
                   messages.map((message) => (
@@ -606,22 +652,31 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                       key={message.id}
                       className={`flex ${message.source_type === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="max-w-md">
-                        <div className={`px-4 py-3 rounded-2xl ${getMessageStyle(message)}`}>
-                          <div className="flex items-center space-x-2 mb-1">
-                            {getMessageIcon(message)}
-                            <span className={`text-xs font-medium ${
-                              message.source_type === 'user' ? 'text-blue-100' : 'text-gray-500'
+                      <div className="max-w-lg">
+                        <div className={`px-5 py-4 rounded-2xl ${getMessageStyle(message)} transform transition-all duration-200 hover:scale-[1.02]`}>
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                              message.source_type === 'user' ? 'bg-blue-500 bg-opacity-20' :
+                              message.source_type === 'ai' ? 'bg-emerald-600 bg-opacity-20' :
+                              message.source_type === 'responder' ? 'bg-gray-600 bg-opacity-20' :
+                              'bg-amber-600 bg-opacity-20'
                             }`}>
-                              {getMessageLabel(message)}
-                            </span>
-                            <span className={`text-xs ${
-                              message.source_type === 'user' ? 'text-blue-100' : 'text-gray-400'
-                            }`}>
-                              {formatTime(message.timestamp)}
-                            </span>
+                              {getMessageIcon(message)}
+                            </div>
+                            <div className="flex-1">
+                              <span className={`text-sm font-bold ${
+                                message.source_type === 'user' ? 'text-blue-100' : 'text-gray-700'
+                              }`}>
+                                {getMessageLabel(message)}
+                              </span>
+                              <p className={`text-xs ${
+                                message.source_type === 'user' ? 'text-blue-200' : 'text-gray-500'
+                              }`}>
+                                {formatTime(message.timestamp)}
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-sm leading-relaxed">{message.text}</p>
+                          <p className="text-sm leading-relaxed font-medium">{message.text}</p>
                         </div>
                       </div>
                     </div>
@@ -629,26 +684,31 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                 )}
                 <div ref={messagesEndRef} />
                 
-                {/* Processing Indicator */}
+                {/* Enhanced Processing Indicator */}
                 {responderProcessingStatus !== 'idle' && (
-                  <div className="flex justify-start mb-4">
-                    <div className="max-w-md">
-                      <div className="px-4 py-3 rounded-2xl bg-yellow-50 border border-yellow-200">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <Headphones className="w-4 h-4 text-yellow-600" />
-                          <span className="text-xs font-medium text-yellow-600">Emergency Responder</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-yellow-800">
-                            {responderProcessingStatus === 'processing_audio' 
-                              ? 'Processing audio message...' 
-                              : 'Generating response...'}
-                          </span>
-                          <div className="flex space-x-1">
-                            <div className="w-1 h-1 bg-yellow-600 rounded-full animate-bounce"></div>
-                            <div className="w-1 h-1 bg-yellow-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                            <div className="w-1 h-1 bg-yellow-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="flex justify-start">
+                    <div className="max-w-lg">
+                      <div className="px-5 py-4 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 shadow-lg">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center">
+                            <Headphones className="w-4 h-4 text-amber-600" />
                           </div>
+                          <div className="flex-1">
+                            <span className="text-sm font-bold text-amber-800">Emergency Responder</span>
+                            <p className="text-xs text-amber-600">Currently active</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                          <span className="text-sm text-amber-800 font-medium">
+                            {responderProcessingStatus === 'processing_audio' 
+                              ? 'Processing incoming audio message...' 
+                              : 'Generating emergency response...'}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -656,21 +716,24 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                 )}
               </div>
 
-              {/* Status Bar */}
-              <div className="p-4 border-t border-gray-200 bg-gray-50">
+              {/* Enhanced Status Bar */}
+              <div className="p-4 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
                 <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-gray-600">Monitoring active</span>
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-green-200 shadow-lg"></div>
+                      <span className="text-gray-700 font-medium">Real-time monitoring active</span>
                     </div>
-                    <div className="text-gray-500">
-                      {messages.length} message{messages.length !== 1 ? 's' : ''}
+                    <div className="flex items-center space-x-2 bg-white px-3 py-1 rounded-lg shadow-sm">
+                      <MessageCircle className="w-4 h-4 text-gray-500" />
+                      <span className="text-gray-600 font-medium">
+                        {messages.length} message{messages.length !== 1 ? 's' : ''} tracked
+                      </span>
                     </div>
                   </div>
                   
-                  <div className="text-gray-500">
-                    Last updated: {formatTime(new Date())}
+                  <div className="text-gray-500 bg-white px-3 py-1 rounded-lg shadow-sm">
+                    <span className="font-medium">Last sync: {formatTime(new Date())}</span>
                   </div>
                 </div>
               </div>
