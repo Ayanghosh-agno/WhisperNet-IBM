@@ -34,6 +34,7 @@ interface EmergencyContextType {
   isAIGuideEnabled: boolean;
   toggleAIGuide: () => Promise<void>;
   responderProcessingStatus: string;
+  isHangingUp: boolean;
 }
 
 const EmergencyContext = createContext<EmergencyContextType | undefined>(undefined);
@@ -52,6 +53,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isSOSInitiated, setIsSOSInitiated] = useState(false);
   const [isAIGuideEnabled, setIsAIGuideEnabled] = useState(true);
   const [responderProcessingStatus, setResponderProcessingStatus] = useState('idle');
+  const [isHangingUp, setIsHangingUp] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [emergencyData, setEmergencyData] = useState<EmergencyData>({
     situationType: '',
@@ -201,6 +203,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const hangupCall = async (): Promise<boolean> => {
+    setIsHangingUp(true);
     try {
       const { data, error } = await supabase.functions.invoke('hangup-call', {
         body: { session_id: emergencyData.sessionId }
@@ -215,6 +218,8 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     } catch (error) {
       console.error('Failed to hang up call:', error);
       return false;
+    } finally {
+      setIsHangingUp(false);
     }
   };
 
@@ -322,6 +327,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         isAIGuideEnabled,
         toggleAIGuide,
         responderProcessingStatus,
+        isHangingUp,
       }}
     >
       {children}

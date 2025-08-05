@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Clock, Phone } from 'lucide-react';
+import { MapPin, Clock, Phone, PhoneOff } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
 export const EmergencyFooter: React.FC = () => {
-  const { isEmergencyActive, emergencyData, elapsedTime, callStatus, isSOSInitiated } = useEmergency();
+  const { isEmergencyActive, emergencyData, elapsedTime, callStatus, isSOSInitiated, hangupCall, endEmergency, isHangingUp } = useEmergency();
   const [location, setLocation] = useState<string>('Location not set');
 
   useEffect(() => {
@@ -68,6 +68,19 @@ export const EmergencyFooter: React.FC = () => {
     }
   };
 
+  const handleEndCall = async () => {
+    // Only attempt to hang up if there's an active call
+    if (isSOSInitiated && (callStatus === 'ringing' || callStatus === 'in-progress' || callStatus === 'queued')) {
+      const success = await hangupCall();
+      if (!success) {
+        console.error('Failed to hang up call');
+        return;
+      }
+    }
+    
+    endEmergency();
+  };
+
   if (!isEmergencyActive) return null;
 
   // Only show footer after SOS call is initiated
@@ -99,6 +112,26 @@ export const EmergencyFooter: React.FC = () => {
             <span>{formatElapsedTime(elapsedTime)}</span>
           </div>
         )}
+        
+        {/* End Emergency Button */}
+        <button
+          onClick={handleEndCall}
+          disabled={isHangingUp}
+          className="ml-4 px-3 py-1.5 bg-red-700 hover:bg-red-800 disabled:bg-red-500 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2 shadow-lg"
+          title="End emergency session"
+        >
+          {isHangingUp ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span className="hidden sm:inline">Ending...</span>
+            </>
+          ) : (
+            <>
+              <PhoneOff className="w-4 h-4" />
+              <span className="hidden sm:inline">End Session</span>
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

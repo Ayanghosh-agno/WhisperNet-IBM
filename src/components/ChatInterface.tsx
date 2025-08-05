@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Volume2, Mic, Phone, PhoneOff, Home, Bot, NutOff as BotOff, Headphones } from 'lucide-react';
+import { Send, Volume2, Mic, Phone, Home, Bot, NutOff as BotOff, Headphones } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { supabase, WhisprMessage } from '../lib/supabase';
 
@@ -17,7 +17,7 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
-  const { emergencyData, endEmergency, hangupCall, callStatus, isSOSInitiated, startCallStatusMonitoring, stopCallStatusMonitoring, isAIGuideEnabled, toggleAIGuide, responderProcessingStatus } = useEmergency();
+  const { emergencyData, endEmergency, callStatus, isSOSInitiated, startCallStatusMonitoring, stopCallStatusMonitoring, isAIGuideEnabled, toggleAIGuide, responderProcessingStatus } = useEmergency();
   
   // Debug log for processing status
   useEffect(() => {
@@ -29,7 +29,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
   const [isConnected, setIsConnected] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isHangingUp, setIsHangingUp] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Start call status monitoring when component mounts
@@ -193,18 +192,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
   };
 
   const handleEndCall = async () => {
-    setIsHangingUp(true);
-    
-    // Only attempt to hang up if there's an active call
-    if (isSOSInitiated && (callStatus === 'ringing' || callStatus === 'in-progress' || callStatus === 'queued')) {
-      const success = await hangupCall();
-      if (!success) {
-        // Show error message or handle failure
-        console.error('Failed to hang up call');
-      }
-    }
-    
-    setIsHangingUp(false);
     setIsConnected(false);
     endEmergency();
   };
@@ -276,18 +263,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleEndCall}
-            disabled={isHangingUp}
-            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            title="End emergency session"
-          >
-            {isHangingUp ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : (
-              <PhoneOff className="w-5 h-5" />
-            )}
-          </button>
         </div>
       </div>
 
@@ -453,14 +428,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
         
         {(!isConnected || callStatus === 'completed') && (
           <div className="mt-4 space-y-3">
-            {isHangingUp && (
-              <div className="text-center text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span>Ending emergency call...</span>
-                </div>
-              </div>
-            )}
             <div className="text-center text-sm text-red-600">
               {callStatus === 'completed' 
                 ? 'Emergency call completed. Contact emergency services if you need further assistance.'
@@ -469,7 +436,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
             </div>
             <button
               onClick={handleGoHome}
-              disabled={isHangingUp}
               className="w-full h-12 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-xl transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50"
             >
               <div className="flex items-center justify-center space-x-2">
