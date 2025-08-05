@@ -33,6 +33,7 @@ interface EmergencyContextType {
   stopCallStatusMonitoring: () => void;
   isAIGuideEnabled: boolean;
   toggleAIGuide: () => Promise<void>;
+  responderProcessingStatus: string;
 }
 
 const EmergencyContext = createContext<EmergencyContextType | undefined>(undefined);
@@ -50,6 +51,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [callStatus, setCallStatus] = useState('queued');
   const [isSOSInitiated, setIsSOSInitiated] = useState(false);
   const [isAIGuideEnabled, setIsAIGuideEnabled] = useState(true);
+  const [responderProcessingStatus, setResponderProcessingStatus] = useState('idle');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [emergencyData, setEmergencyData] = useState<EmergencyData>({
     situationType: '',
@@ -76,13 +78,14 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const fetchCallStatus = async () => {
       const { data, error } = await supabase
         .from('sos_sessions')
-        .select('callStatus, ai_guide_enabled')
+        .select('callStatus, ai_guide_enabled, responder_processing_status')
         .eq('session_id', emergencyData.sessionId)
         .single();
 
       if (data && !error) {
         setCallStatus(data.callStatus || 'queued');
         setIsAIGuideEnabled(data.ai_guide_enabled ?? true);
+        setResponderProcessingStatus(data.responder_processing_status || 'idle');
       }
     };
 
@@ -105,6 +108,8 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           setCallStatus(newStatus);
           const aiGuideEnabled = payload.new.ai_guide_enabled ?? true;
           setIsAIGuideEnabled(aiGuideEnabled);
+          const processingStatus = payload.new.responder_processing_status || 'idle';
+          setResponderProcessingStatus(processingStatus);
         }
       )
       .subscribe();
@@ -151,6 +156,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCallStatus('queued');
     setIsSOSInitiated(false);
     setIsAIGuideEnabled(true);
+    setResponderProcessingStatus('idle');
     setElapsedTime(0);
     setChatMessages([]);
   };
@@ -308,6 +314,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         stopCallStatusMonitoring,
         isAIGuideEnabled,
         toggleAIGuide,
+        responderProcessingStatus,
       }}
     >
       {children}
