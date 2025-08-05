@@ -400,9 +400,9 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
       </div>
 
       <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 bp788:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 h-[calc(100vh-200px)]">
+        <div className="grid grid-cols-1 bp788:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
           {/* Enhanced Emergency Details Panel */}
-          <div className="bp788:col-span-2 space-y-4 sm:space-y-6 h-auto bp788:h-full overflow-y-auto">
+          <div className="bp788:col-span-2 space-y-4 sm:space-y-6">
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               <div className="bg-gradient-to-r from-red-50 to-red-100 p-4 sm:p-6 border-b border-red-200">
                 <h2 className="text-lg sm:text-xl font-bold text-red-900 flex items-center space-x-3">
@@ -610,8 +610,8 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
           </div>
 
           {/* Enhanced Chat Messages Panel */}
-          <div className="bp788:col-span-3 h-[75vh] bp788:h-full">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 h-full flex flex-col overflow-hidden">
+          <div className="bp788:col-span-3">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 h-[80vh] bp788:h-[calc(100vh-200px)] flex flex-col overflow-hidden">
               {/* Enhanced Chat Header */}
               <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 border-b border-gray-200">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
