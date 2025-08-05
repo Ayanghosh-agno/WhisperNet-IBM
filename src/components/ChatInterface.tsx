@@ -19,6 +19,11 @@ interface ChatInterfaceProps {
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
   const { emergencyData, endEmergency, hangupCall, callStatus, isSOSInitiated, startCallStatusMonitoring, stopCallStatusMonitoring, isAIGuideEnabled, toggleAIGuide, responderProcessingStatus } = useEmergency();
   
+  // Debug log for processing status
+  useEffect(() => {
+    console.log('ChatInterface - responderProcessingStatus changed:', responderProcessingStatus);
+  }, [responderProcessingStatus]);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isConnected, setIsConnected] = useState(true);
@@ -391,7 +396,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
       </div>
       
       {/* Processing Indicator */}
-      {responderProcessingStatus && responderProcessingStatus !== 'idle' && (
+      {responderProcessingStatus !== 'idle' && (
         <div className="px-4 py-2 border-t border-gray-100">
           <div className="flex justify-start">
             <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl bg-gray-100 border border-gray-200">

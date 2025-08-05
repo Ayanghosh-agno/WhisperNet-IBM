@@ -23,6 +23,11 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
   const [isConnected, setIsConnected] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Debug log for processing status changes
+  useEffect(() => {
+    console.log('LiveChatView - responderProcessingStatus changed:', responderProcessingStatus);
+  }, [responderProcessingStatus]);
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,7 +40,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
         // Fetch session information
         const { data: session, error: sessionError } = await supabase
           .from('sos_sessions')
-          .select('*, responder_processing_status')
+          .select('*')
           .eq('session_id', sessionId)
           .single();
 
@@ -45,8 +50,11 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
           return;
         }
 
+        console.log('LiveChatView - Fetched session data:', session);
         setSessionData(session);
-        setResponderProcessingStatus(session.responder_processing_status || 'idle');
+        const processingStatus = session.responder_processing_status || 'idle';
+        console.log('LiveChatView - Setting processing status to:', processingStatus);
+        setResponderProcessingStatus(processingStatus);
 
         // Fetch messages for this session
         const { data: messagesData, error: messagesError } = await supabase
@@ -125,8 +133,11 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
           filter: `session_id=eq.${sessionId}`
         },
         (payload) => {
+          console.log('LiveChatView - Session update received:', payload);
           setSessionData(payload.new as SOSSession);
-          setResponderProcessingStatus(payload.new.responder_processing_status || 'idle');
+          const processingStatus = payload.new.responder_processing_status || 'idle';
+          console.log('LiveChatView - Processing status update:', processingStatus);
+          setResponderProcessingStatus(processingStatus);
         }
       )
       .subscribe();
@@ -414,7 +425,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                 <div ref={messagesEndRef} />
                 
                 {/* Processing Indicator */}
-                {responderProcessingStatus && responderProcessingStatus !== 'idle' && (
+                {responderProcessingStatus !== 'idle' && (
                   <div className="flex justify-start mb-4">
                     <div className="max-w-md">
                       <div className="px-4 py-3 rounded-2xl bg-yellow-50 border border-yellow-200">

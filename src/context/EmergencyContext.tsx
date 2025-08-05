@@ -83,9 +83,14 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         .single();
 
       if (data && !error) {
+        console.log('Fetched session data:', data);
         setCallStatus(data.callStatus || 'queued');
         setIsAIGuideEnabled(data.ai_guide_enabled ?? true);
-        setResponderProcessingStatus(data.responder_processing_status || 'idle');
+        const processingStatus = data.responder_processing_status || 'idle';
+        console.log('Setting responder processing status to:', processingStatus);
+        setResponderProcessingStatus(processingStatus);
+      } else {
+        console.error('Error fetching session data:', error);
       }
     };
 
@@ -104,11 +109,13 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           filter: `session_id=eq.${emergencyData.sessionId}`
         },
         (payload) => {
+          console.log('Real-time update received:', payload);
           const newStatus = payload.new.callStatus || 'queued';
           setCallStatus(newStatus);
           const aiGuideEnabled = payload.new.ai_guide_enabled ?? true;
           setIsAIGuideEnabled(aiGuideEnabled);
           const processingStatus = payload.new.responder_processing_status || 'idle';
+          console.log('Real-time processing status update:', processingStatus);
           setResponderProcessingStatus(processingStatus);
         }
       )
