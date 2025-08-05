@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Clock, MapPin, Users, AlertCircle, Bot, User, Headphones, Shield } from 'lucide-react';
+import { Eye, Clock, MapPin, Users, AlertCircle, Bot, User, Headphones, Shield, Send, MessageCircle } from 'lucide-react';
 import { supabase, SOSSession, SOSMessage } from '../lib/supabase';
 
 interface LiveChatViewProps {
@@ -14,6 +14,14 @@ interface Message {
   timestamp: Date;
 }
 
+interface AIMessage {
+  id: string;
+  question: string;
+  reply: string;
+  timestamp: Date;
+  isLoading?: boolean;
+}
+
 export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessionData, setSessionData] = useState<SOSSession | null>(null);
@@ -21,7 +29,12 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [aiMessages, setAiMessages] = useState<AIMessage[]>([]);
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [isAskingAI, setIsAskingAI] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const aiMessagesEndRef = useRef<HTMLDivElement>(null);
 
   // Debug log for processing status changes
   useEffect(() => {
@@ -33,6 +46,10 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Auto-scroll AI chat to bottom
+  useEffect(() => {
+    aiMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [aiMessages]);
   // Fetch session data and messages
   useEffect(() => {
     const fetchSessionData = async () => {
@@ -244,6 +261,72 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
     }
   };
 
+  const handleAskAI = async () => {
+    if (!aiQuestion.trim() || isAskingAI) return;
+
+    const questionText = aiQuestion.trim();
+    const messageId = `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Add loading message
+    const loadingMessage: AIMessage = {
+      id: messageId,
+      question: questionText,
+      reply: '',
+      timestamp: new Date(),
+      isLoading: true
+    };
+    
+    setAiMessages(prev => [...prev, loadingMessage]);
+    setAiQuestion('');
+    setIsAskingAI(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('contact-ai-helper', {
+        body: {
+          session_id: sessionId,
+          question: questionText
+        }
+      });
+
+      if (error) {
+        throw new Error(`AI helper error: ${error.message}`);
+      }
+
+      // Update the message with the actual reply
+      setAiMessages(prev => prev.map(msg => 
+        msg.id === messageId 
+          ? { ...msg, reply: data.reply, isLoading: false }
+          : msg
+      ));
+    } catch (error) {
+      console.error('Failed to get AI response:', error);
+      
+      // Update with error message
+      setAiMessages(prev => prev.map(msg => 
+        msg.id === messageId 
+          ? { ...msg, reply: 'Sorry, I encountered an error processing your question. Please try again.', isLoading: false }
+          : msg
+      ));
+    } finally {
+      setIsAskingAI(false);
+    }
+  };
+
+  const handleAIKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleAskAI();
+    }
+  };
+
+  const suggestedQuestions = [
+    "Who is in danger?",
+    "What happened?", 
+    "What should I do now?",
+    "Where exactly is the emergency?",
+    "How serious is the situation?"
+  ];
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -307,7 +390,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
       <div className="max-w-6xl mx-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Emergency Details Panel */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-4">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                 <AlertCircle className="w-5 h-5 text-red-600" />
@@ -368,6 +451,128 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                       <span>Session Started</span>
                     </label>
                     <p className="text-gray-900">{formatDate(new Date(sessionData.created_at || Date.now()))}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* AI Assistant Panel */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="p-4 border-b border-gray-200">
+                <button
+                  onClick={() => setShowAIChat(!showAIChat)}
+                  className="w-full flex items-center justify-between text-left"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Bot className="w-5 h-5 text-blue-600" />
+                    <span className="text-lg font-semibold text-gray-900">AI Assistant</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {aiMessages.length > 0 && (
+                      <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                        {aiMessages.length}
+                      </span>
+                    )}
+                    <svg 
+                      className={`w-4 h-4 text-gray-400 transition-transform ${showAIChat ? 'rotate-180' : ''}`} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </button>
+                <p className="text-sm text-gray-500 mt-1">Ask questions about this emergency</p>
+              </div>
+              
+              {showAIChat && (
+                <div className="p-4 space-y-4">
+                  {/* Suggested Questions */}
+                  {aiMessages.length === 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-gray-700">Quick questions:</p>
+                      <div className="space-y-1">
+                        {suggestedQuestions.map((question, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setAiQuestion(question)}
+                            className="w-full text-left text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                          >
+                            {question}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* AI Chat Messages */}
+                  {aiMessages.length > 0 && (
+                    <div className="max-h-64 overflow-y-auto space-y-3">
+                      {aiMessages.map((aiMsg) => (
+                        <div key={aiMsg.id} className="space-y-2">
+                          {/* Question */}
+                          <div className="flex justify-end">
+                            <div className="bg-blue-600 text-white px-3 py-2 rounded-lg max-w-xs">
+                              <p className="text-sm">{aiMsg.question}</p>
+                              <p className="text-xs text-blue-100 mt-1">{formatTime(aiMsg.timestamp)}</p>
+                            </div>
+                          </div>
+                          
+                          {/* Reply */}
+                          <div className="flex justify-start">
+                            <div className="bg-gray-100 text-gray-800 px-3 py-2 rounded-lg max-w-xs">
+                              <div className="flex items-center space-x-1 mb-1">
+                                <Bot className="w-3 h-3 text-blue-600" />
+                                <span className="text-xs font-medium text-gray-500">AI Assistant</span>
+                              </div>
+                              {aiMsg.isLoading ? (
+                                <div className="flex items-center space-x-2">
+                                  <div className="flex space-x-1">
+                                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
+                                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                  </div>
+                                  <span className="text-sm text-gray-600">Analyzing emergency data...</span>
+                                </div>
+                              ) : (
+                                <p className="text-sm">{aiMsg.reply}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <div ref={aiMessagesEndRef} />
+                    </div>
+                  )}
+                  
+                  {/* AI Input */}
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="text"
+                        value={aiQuestion}
+                        onChange={(e) => setAiQuestion(e.target.value)}
+                        onKeyPress={handleAIKeyPress}
+                        placeholder="Ask about this emergency..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        disabled={isAskingAI}
+                      />
+                      <button
+                        onClick={handleAskAI}
+                        disabled={!aiQuestion.trim() || isAskingAI}
+                        className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+                      >
+                        {isAskingAI ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <Send className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Ask the AI assistant about the emergency situation, location, or what actions to take.
+                    </p>
                   </div>
                 </div>
               )}
