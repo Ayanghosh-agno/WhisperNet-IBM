@@ -295,7 +295,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
       // Update the message with the actual reply
       setAiMessages(prev => prev.map(msg => 
         msg.id === messageId 
-          ? { ...msg, reply: data.reply, isLoading: false }
+          ? { ...msg, reply: data.answer, isLoading: false }
           : msg
       ));
     } catch (error) {
@@ -388,10 +388,10 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
       </div>
 
       <div className="max-w-6xl mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Emergency Details Panel */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-4">
+          <div className="xl:col-span-1 space-y-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                 <AlertCircle className="w-5 h-5 text-red-600" />
                 <span>Emergency Details</span>
@@ -457,7 +457,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
             </div>
             
             {/* AI Assistant Panel */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
               <div className="p-4 border-b border-gray-200">
                 <button
                   onClick={() => setShowAIChat(!showAIChat)}
@@ -508,7 +508,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                   
                   {/* AI Chat Messages */}
                   {aiMessages.length > 0 && (
-                    <div className="max-h-64 overflow-y-auto space-y-3">
+                    <div className="max-h-48 overflow-y-auto space-y-3 mb-4">
                       {aiMessages.map((aiMsg) => (
                         <div key={aiMsg.id} className="space-y-2">
                           {/* Question */}
@@ -580,8 +580,8 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
           </div>
 
           {/* Chat Messages Panel */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-[calc(100vh-200px)] flex flex-col">
+          <div className="xl:col-span-2">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-[calc(100vh-180px)] flex flex-col">
               {/* Chat Header */}
               <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
