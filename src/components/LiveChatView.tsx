@@ -409,6 +409,32 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                   ))
                 )}
                 <div ref={messagesEndRef} />
+                
+                {/* Processing Indicator */}
+                {responderProcessingStatus !== 'idle' && (
+                  <div className="flex justify-start mb-4">
+                    <div className="max-w-md">
+                      <div className="px-4 py-3 rounded-2xl bg-yellow-50 border border-yellow-200">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <Headphones className="w-4 h-4 text-yellow-600" />
+                          <span className="text-xs font-medium text-yellow-600">Emergency Responder</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-yellow-800">
+                            {responderProcessingStatus === 'processing_audio' 
+                              ? 'Processing audio message...' 
+                              : 'Generating response...'}
+                          </span>
+                          <div className="flex space-x-1">
+                            <div className="w-1 h-1 bg-yellow-600 rounded-full animate-bounce"></div>
+                            <div className="w-1 h-1 bg-yellow-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-1 h-1 bg-yellow-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Status Bar */}

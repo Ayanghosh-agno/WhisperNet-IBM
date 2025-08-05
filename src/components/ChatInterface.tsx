@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Volume2, Mic, Phone, PhoneOff, Home, Bot, NutOff as BotOff } from 'lucide-react';
+import { Send, Volume2, Mic, Phone, PhoneOff, Home, Bot, NutOff as BotOff, Headphones } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { supabase, WhisprMessage } from '../lib/supabase';
 
@@ -389,6 +389,33 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
         
         <div ref={messagesEndRef} />
       </div>
+      
+      {/* Processing Indicator */}
+      {responderProcessingStatus !== 'idle' && (
+        <div className="px-4 py-2 border-t border-gray-100">
+          <div className="flex justify-start">
+            <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl bg-gray-100 border border-gray-200">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-gray-400 rounded-full flex items-center justify-center">
+                  <Headphones className="w-2 h-2" />
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-sm text-gray-600">
+                    {responderProcessingStatus === 'processing_audio' 
+                      ? 'Processing audio...' 
+                      : 'Generating response...'}
+                  </span>
+                  <div className="flex space-x-1">
+                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Input Area */}
       <div className="bg-white border-t border-gray-200 p-4 relative z-10">
