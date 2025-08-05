@@ -364,34 +364,34 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
       {/* Enhanced Header */}
       <div className="bg-white shadow-lg border-b border-gray-200">
         <div className="max-w-7xl mx-auto p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <Eye className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+          <div className="flex flex-col bp788:flex-row bp788:items-center bp788:justify-between space-y-4 bp788:space-y-0">
+            <div className="flex items-center space-x-3 bp788:space-x-4">
+              <div className="w-12 h-12 bp788:w-14 bp788:h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <Eye className="w-6 h-6 bp788:w-7 bp788:h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Live Emergency Monitor</h1>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mt-1">
+                <h1 className="text-xl bp788:text-2xl font-bold text-gray-900">Live Emergency Monitor</h1>
+                <div className="flex flex-col bp788:flex-row bp788:items-center bp788:space-x-3 mt-1">
                   <span className="text-sm text-gray-500">Session ID:</span>
-                  <code className="text-xs sm:text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-700 break-all">{sessionId}</code>
+                  <code className="text-xs bp788:text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-700 break-all">{sessionId}</code>
                 </div>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-6">
+            <div className="flex flex-col bp788:flex-row bp788:items-center space-y-3 bp788:space-y-0 bp788:space-x-6">
               <div className={`flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2 rounded-xl border ${getCallStatusColor()}`}>
                 <div className={`w-3 h-3 rounded-full ${
                   sessionData?.callStatus === 'in-progress' ? 'bg-green-500 animate-pulse' : 
                   sessionData?.callStatus === 'ringing' ? 'bg-orange-500 animate-bounce' :
                   'bg-current'
                 }`}></div>
-                <span className="text-sm sm:text-base font-semibold">{getCallStatusText()}</span>
+                <span className="text-sm bp788:text-base font-semibold">{getCallStatusText()}</span>
               </div>
               
               {sessionData?.created_at && (
-                <div className="text-left sm:text-right">
-                  <div className="text-xs sm:text-sm font-medium text-gray-700">Session Started</div>
-                  <div className="text-xs sm:text-sm text-gray-500">{formatDate(new Date(sessionData.created_at))}</div>
+                <div className="text-left bp788:text-right">
+                  <div className="text-xs bp788:text-sm font-medium text-gray-700">Session Started</div>
+                  <div className="text-xs bp788:text-sm text-gray-500">{formatDate(new Date(sessionData.created_at))}</div>
                 </div>
               )}
             </div>
