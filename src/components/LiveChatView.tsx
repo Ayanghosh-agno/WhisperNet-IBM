@@ -400,9 +400,9 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
       </div>
 
       <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
           {/* Enhanced Emergency Details Panel */}
-          <div className="xl:col-span-1 space-y-6">
+          <div className="xl:col-span-2 space-y-6">
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               <div className="bg-gradient-to-r from-red-50 to-red-100 p-6 border-b border-red-200">
                 <h2 className="text-xl font-bold text-red-900 flex items-center space-x-3">
