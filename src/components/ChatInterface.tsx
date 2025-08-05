@@ -391,7 +391,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
       </div>
       
       {/* Processing Indicator */}
-      {responderProcessingStatus !== 'idle' && (
+      {responderProcessingStatus && responderProcessingStatus !== 'idle' && (
         <div className="px-4 py-2 border-t border-gray-100">
           <div className="flex justify-start">
             <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-2xl bg-gray-100 border border-gray-200">

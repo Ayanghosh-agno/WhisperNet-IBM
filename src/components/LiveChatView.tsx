@@ -17,6 +17,7 @@ interface Message {
 export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [sessionData, setSessionData] = useState<SOSSession | null>(null);
+  const [responderProcessingStatus, setResponderProcessingStatus] = useState<string>('idle');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -34,7 +35,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
         // Fetch session information
         const { data: session, error: sessionError } = await supabase
           .from('sos_sessions')
-          .select('*')
+          .select('*, responder_processing_status')
           .eq('session_id', sessionId)
           .single();
 
@@ -45,6 +46,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
         }
 
         setSessionData(session);
+        setResponderProcessingStatus(session.responder_processing_status || 'idle');
 
         // Fetch messages for this session
         const { data: messagesData, error: messagesError } = await supabase
@@ -124,6 +126,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
         },
         (payload) => {
           setSessionData(payload.new as SOSSession);
+          setResponderProcessingStatus(payload.new.responder_processing_status || 'idle');
         }
       )
       .subscribe();
@@ -411,7 +414,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
                 <div ref={messagesEndRef} />
                 
                 {/* Processing Indicator */}
-                {responderProcessingStatus !== 'idle' && (
+                {responderProcessingStatus && responderProcessingStatus !== 'idle' && (
                   <div className="flex justify-start mb-4">
                     <div className="max-w-md">
                       <div className="px-4 py-3 rounded-2xl bg-yellow-50 border border-yellow-200">
