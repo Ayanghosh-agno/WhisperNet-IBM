@@ -11,10 +11,11 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
   const { emergencyData, updateEmergencyData } = useEmergency();
   const [isLoading, setIsLoading] = useState(false);
   const [showAdditionalContacts, setShowAdditionalContacts] = useState(false);
+  const [phoneValidationError, setPhoneValidationError] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!emergencyData.description || !emergencyData.callNumber) return;
+    if (!emergencyData.description || !emergencyData.callNumber || !isValidPhoneNumber(emergencyData.callNumber)) return;
 
     setIsLoading(true);
     
@@ -44,9 +45,55 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
     return `+${digits.slice(0, 12)}`;
   };
 
+  const isValidPhoneNumber = (phoneNumber: string): boolean => {
+    // Remove all non-digits
+    const digits = phoneNumber.replace(/\D/g, '');
+    
+    // Check if it has at least 10 digits (minimum for most countries) and at most 15 (ITU-T E.164 standard)
+    if (digits.length < 10 || digits.length > 15) {
+      return false;
+    }
+    
+    // Check if it starts with a valid country code (1-4 digits)
+    // Most country codes are 1-3 digits, but we allow up to 4 for flexibility
+    const countryCodePattern = /^[1-9]\d{0,3}/;
+    return countryCodePattern.test(digits);
+  };
+
+  const validatePhoneNumber = (phoneNumber: string): string => {
+    if (!phoneNumber.trim()) {
+      return 'Emergency call number is required';
+    }
+    
+    if (!phoneNumber.startsWith('+')) {
+      return 'Phone number must start with + followed by country code';
+    }
+    
+    const digits = phoneNumber.replace(/\D/g, '');
+    
+    if (digits.length < 10) {
+      return 'Phone number must have at least 10 digits';
+    }
+    
+    if (digits.length > 15) {
+      return 'Phone number cannot exceed 15 digits';
+    }
+    
+    if (!isValidPhoneNumber(phoneNumber)) {
+      return 'Please enter a valid phone number with country code';
+    }
+    
+    return '';
+  };
   const handlePhoneChange = (field: 'callNumber' | 'emergencyContact1' | 'emergencyContact2', value: string) => {
     const formatted = formatPhoneNumber(value);
     updateEmergencyData({ [field]: formatted });
+    
+    // Validate main emergency call number
+    if (field === 'callNumber') {
+      const error = validatePhoneNumber(formatted);
+      setPhoneValidationError(error);
+    }
   };
 
   return (
@@ -143,9 +190,19 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
                 type="tel"
                 value={emergencyData.callNumber}
                 onChange={(e) => handlePhoneChange('callNumber', e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                className={`w-full p-4 border rounded-lg focus:ring-2 text-gray-900 transition-colors ${
+                  phoneValidationError 
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50' 
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                }`}
                 required
               />
+              {phoneValidationError && (
+                <p className="text-sm text-red-600 flex items-center space-x-1">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>{phoneValidationError}</span>
+                </p>
+              )}
               <p className="text-sm text-gray-500">Format: +CountryCode followed by phone number (e.g., +919800374139)</p>
             </div>
 
@@ -235,7 +292,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading || !emergencyData.description || !emergencyData.callNumber}
+              disabled={isLoading || !emergencyData.description || !emergencyData.callNumber || phoneValidationError !== '' || !isValidPhoneNumber(emergencyData.callNumber)}
               className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-lg font-semibold py-4 px-6 rounded-lg shadow-sm transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-red-300"
             >
               <div className="flex items-center justify-center space-x-3">
