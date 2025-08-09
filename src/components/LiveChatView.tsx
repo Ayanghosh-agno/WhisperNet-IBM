@@ -36,11 +36,6 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const aiMessagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Debug log for processing status changes
-  useEffect(() => {
-    console.log('LiveChatView - responderProcessingStatus changed:', responderProcessingStatus);
-  }, [responderProcessingStatus]);
-
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
