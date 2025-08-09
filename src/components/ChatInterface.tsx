@@ -441,46 +441,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
         
         {(!isConnected || callStatus === 'completed') && (
           <div className="mt-4 space-y-3">
-            {/* Call Status Summary */}
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    callStatus === 'completed' ? 'bg-green-100' : 'bg-gray-100'
-                  }`}>
-                    {getCallStatusIcon()}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {callStatus === 'completed' ? 'Emergency Call Completed' : 'Emergency Session Ended'}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      {callStatus === 'completed' 
-                        ? 'Successfully connected to emergency services'
-                        : 'Session terminated by user'
-                      }
-                    </p>
-                  </div>
-                </div>
-                
-                {elapsedTime > 0 && (
-                  <div className="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg border border-gray-200">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm font-mono font-semibold text-gray-700">
-                      {formatElapsedTime(elapsedTime)}
-                    </span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="text-center text-sm text-gray-600 bg-white rounded-lg p-3 border border-gray-200">
-                {callStatus === 'completed' 
-                  ? 'Emergency call completed. Contact emergency services if you need further assistance.'
-                  : 'Emergency session ended. Contact emergency services if you need further assistance.'
-                }
-              </div>
+            <div className="text-center text-sm text-red-600">
+              {callStatus === 'completed' 
+                ? 'Emergency call completed. Contact emergency services if you need further assistance.'
+                : 'Emergency session ended. Contact emergency services if you need further assistance.'
+              }
             </div>
-            
             <button
               onClick={handleGoHome}
               className="w-full h-12 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-xl transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50"

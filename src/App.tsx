@@ -48,7 +48,7 @@ function App() {
     <EmergencyProvider>
       <div className="min-h-screen">
         {renderCurrentPage()}
-        {currentRoute !== '/' && currentRoute !== '/live-chat' && currentRoute !== '/chat' && <EmergencyFooter />}
+        {currentRoute !== '/' && currentRoute !== '/live-chat' && <EmergencyFooter />}
       </div>
     </EmergencyProvider>
   );
