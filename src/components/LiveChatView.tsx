@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Clock, MapPin, Users, AlertCircle, Bot, User, Headphones, Shield, Send, MessageCircle, ExternalLink, Loader2 } from 'lucide-react';
+import { Eye, Clock, MapPin, Users, AlertCircle, Bot, User, Headphones, Shield, Send, MessageCircle, ExternalLink, Loader2, Phone, PhoneCall, CheckCircle, XCircle, Timer } from 'lucide-react';
 import { supabase, SOSSession, SOSMessage } from '../lib/supabase';
 
 interface LiveChatViewProps {
@@ -262,6 +262,25 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
     }
   };
 
+  const getCallStatusIcon = () => {
+    if (!sessionData) return <Phone className="w-5 h-5" />;
+    
+    switch (sessionData.callStatus) {
+      case 'ringing':
+        return <Phone className="w-5 h-5 animate-pulse" />;
+      case 'queued':
+        return <Timer className="w-5 h-5" />;
+      case 'in-progress':
+        return <PhoneCall className="w-5 h-5" />;
+      case 'completed':
+        return <CheckCircle className="w-5 h-5" />;
+      case 'failed':
+        return <XCircle className="w-5 h-5" />;
+      default:
+        return <Phone className="w-5 h-5" />;
+    }
+  };
+
   const handleAskAI = async () => {
     if (!aiQuestion.trim() || isAskingAI) return;
 
@@ -380,6 +399,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
             
             <div className="flex flex-col bp788:flex-row bp788:items-center space-y-3 bp788:space-y-0 bp788:space-x-6">
               <div className={`flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2 rounded-xl border ${getCallStatusColor()}`}>
+                {getCallStatusIcon()}
                 <div className={`w-3 h-3 rounded-full ${
                   sessionData?.callStatus === 'in-progress' ? 'bg-green-500 animate-pulse' : 
                   sessionData?.callStatus === 'ringing' ? 'bg-orange-500 animate-bounce' :
