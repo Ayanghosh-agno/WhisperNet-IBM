@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, AlertCircle, MapPin, Users, Phone, MessageSquare, RefreshCw } from 'lucide-react';
+import { ArrowLeft, AlertCircle, MapPin, Users, Phone, MessageSquare, RefreshCw, AlertTriangle } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { LocationPicker } from './LocationPicker';
 
