@@ -1,12 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { MapPin, Clock, Phone, PhoneOff, Timer, PhoneCall, CheckCircle, XCircle } from 'lucide-react';
-import { useEmergency } from '../context/EmergencyContext';
-
-export const EmergencyFooter: React.FC = () => {
-  const { isEmergencyActive, emergencyData, elapsedTime, callStatus, isSOSInitiated, hangupCall, endEmergency, isHangingUp } = useEmergency();
-  const [location, setLocation] = useState<string>('Location not set');
-  const [isSessionEnding, setIsSessionEnding] = useState(false);
-
   useEffect(() => {
     if (isEmergencyActive && emergencyData.locationName) {
       // Extract just the coordinates for footer display
