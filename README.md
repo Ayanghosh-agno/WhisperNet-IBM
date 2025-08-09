@@ -1,1 +1,112 @@
-WhisperNet-IBM
+[![Community](https://img.shields.io/badge/Join-Community-blue)](https://developer.ibm.com/callforcode/solutions/projects/get-started/)
+<h1 align="center"<a name="title"></a>WhisperNet</h1>
+<div align="center">
+  
+>  **Speak without speaking. Help without delay.**  
+> WhisperNet connects victims, responders, and loved ones — even when words aren’t possible.
+
+
+</div>
+<h1 align="center"</a></h1>
+
+  - [Project Summary](#project-summary)
+      - [The issue we are hoping to solve](#issue-we-are-solving)
+      - [Our Idea](#our-idea)
+      - [Target User](#target-user)
+      - [Agentic AI and WatsonX in WhisperNet](#watsonx-agents)
+   
+  - [Technology Implementation](#technology-implementation)
+      - [Tech Stack](#tech-stack)
+      - [Solution Architecture](#solution-architecture)
+
+
+<h2 align="center"> Project Summary <a name="project-summary"></a> </h2>
+
+### The Issue we are hoping to solve <a name="issue-we-are-solving"></a>
+During emergencies such as assaults, active shooter incidents, domestic violence, or medical crises, victims may be **unable to speak or make calls verbally** due to immediate danger, injury, or fear of escalation.  
+Traditional SOS alerts (mobile apps, SMS, or panic buttons) have significant limitations:
+- They send only a **one-time static alert** without live context.
+- Emergency responders **cannot ask follow-up questions** in real time.
+- Victims cannot **safely provide continuous updates** while hiding or staying silent.
+- Contacted friends/family **receive minimal information** and cannot engage with the situation.
+
+This lack of two-way, real-time, context-rich communication delays response times and may cost lives.
+
+### Our Idea : WhisperNet <a name="our-idea"></a>
+
+**WhisperNet** is an **agentic AI-powered, silent emergency communication system** that allows victims to have a **real-time, two-way conversation** with emergency responders **without speaking a single word**.
+
+Key features:
+- Victim communicates **silently** through minimal actions or typing.
+- Emergency responders speak as usual — their voice is converted to text, processed by **WatsonX AI**, and answered **as if by the victim** using prior context.
+- Two-stage SMS alerts to emergency contacts:
+  1. **Stage 1** → Immediate alert + live chat link.
+  2. **Stage 2** → AI-triggered, **only when enough details** (name, location, threat type) are confirmed.
+- Emergency contacts can **chat with WatsonX AI** to understand the situation and ask:
+  - Who is in danger?
+  - What happened?
+  - What should I do now?
+- Works across **phone calls (via Twilio)**, **Supabase Edge Functions**, and **WatsonX Granite LLMs** for reasoning.
+
+### Target Users <a name="target-user"></a>
+
+1. **Victims in Emergencies** — unable to speak but need to communicate quickly and discreetly.
+2. **Emergency Responders** — need situational awareness in real-time.
+3. **Emergency Contacts** — friends/family who must be informed and guided.
+
+**Example Use Cases:**
+- Active shooter situations
+- Domestic violence
+- Kidnapping/abduction
+- Medical emergencies when speaking is not possible
+- Natural disasters where noise makes communication hard
+
+
+### Agentic AI Workflow with IBM WatsonX <a name="watsonx-agents"></a>
+
+WhisprNet uses **multiple autonomous agents**, each powered by IBM WatsonX Granite models.
+
+### **1. Responder Aid Agent**
+- **Goal:** Acts as the victim’s voice in real time.
+- **Input:**  
+  - Responder’s spoken question (converted to text via IBM Speech-to-Text).
+  - Past victim messages in the current session.
+- **Processing:**  
+  - WatsonX Granite Instruct model generates the **most likely victim response** based strictly on prior context if not enough context present then watsonx ai let user to answer by typing in the chat.
+- **Output:** Spoken answer to the responder via Twilio + stored in conversation logs.
+
+
+### **2. Stage 2 Alert Agent**
+- **Goal:** Decide when to escalate to full SMS alert with details.
+- **Input:** Entire victim-responder conversation log.
+- **Processing:**  
+  - WatsonX AI checks for **3 mandatory details**:  
+    1. Victim’s name  
+    2. Type of threat  
+    3. Location
+  - If confirmed, generates **a concise AI-written summary**.
+- **Output:** Sends Stage 2 SMS to emergency contacts with:
+  - Summary of the situation.
+  - Live chat link for ongoing updates.
+
+
+### **3. Emergency Contact Context Agent**
+- **Goal:** Provide dynamic Q&A for emergency contacts.
+- **Input:** Session ID + chat history of the emergency.
+- **Processing:**  
+  - WatsonX AI answers free-form questions from emergency contacts (“Where is the victim?”, “What happened?”, “What should I do?”).
+- **Output:** Context-aware, AI-generated responses for friends/family.
+
+<h2 align="center"> Technology Implementation <a name="technology-implementation"></a> </h2>
+
+### Tech Stack Used <a name="tech-stack"></a>
+
+1. **IBM WatsonX AI (Granite-3-8B Instruct)** → Multi-agent reasoning, summarization, and context inference.
+2. **IBM Speech-to-Text** → Transcribes responder’s voice in real-time.
+3. **Twilio Voice API** → Phone calls between victim & responder.
+4. **Twilio Messaging API** → Emergency SMS alerts for the emergency contacts.
+5. **Supabase Edge Functions** → Secure serverless AI & communication orchestration.
+6. **Supabase Database** → Store sessions, messages, emergency contact info.
+
+### Technical Architecture <a name="solution-architecture"></a>
+
