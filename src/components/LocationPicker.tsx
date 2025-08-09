@@ -62,7 +62,6 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({ initialLocation,
         onLocationChange(locationData);
       }
     } catch (error) {
-      console.error('Reverse geocoding failed:', error);
       const fallbackAddress = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       setAddress(fallbackAddress);
       
@@ -94,7 +93,6 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({ initialLocation,
         setIsLoadingLocation(false);
       },
       (error) => {
-        console.error('Geolocation error:', error);
         setAddress('Location access denied');
         setIsLoadingLocation(false);
       },

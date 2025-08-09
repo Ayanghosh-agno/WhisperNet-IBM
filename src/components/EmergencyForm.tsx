@@ -32,7 +32,6 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
           setShowContactPopup(true);
         }
       } catch (error) {
-        console.error('Error parsing saved contacts:', error);
         localStorage.removeItem('whispernet_emergency_contacts');
       }
     }

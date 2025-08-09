@@ -85,14 +85,11 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         .single();
 
       if (data && !error) {
-        console.log('Fetched session data:', data);
         setCallStatus(data.callStatus || 'queued');
         setIsAIGuideEnabled(data.ai_guide_enabled ?? true);
         const processingStatus = data.responder_processing_status || 'idle';
-        console.log('Setting responder processing status to:', processingStatus);
         setResponderProcessingStatus(processingStatus);
       } else {
-        console.error('Error fetching session data:', error);
       }
     };
 
@@ -111,13 +108,11 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           filter: `session_id=eq.${emergencyData.sessionId}`
         },
         (payload) => {
-          console.log('Real-time update received:', payload);
           const newStatus = payload.new.callStatus || 'queued';
           setCallStatus(newStatus);
           const aiGuideEnabled = payload.new.ai_guide_enabled ?? true;
           setIsAIGuideEnabled(aiGuideEnabled);
           const processingStatus = payload.new.responder_processing_status || 'idle';
-          console.log('Real-time processing status update:', processingStatus);
           setResponderProcessingStatus(processingStatus);
         }
       )
@@ -194,10 +189,8 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         throw new Error(`SOS function error: ${error.message}`);
       }
 
-      console.log('SOS call initiated successfully:', data);
       return true;
     } catch (error) {
-      console.error('Failed to initiate SOS call:', error);
       return false;
     }
   };
@@ -210,13 +203,11 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       });
 
       if (error) {
-        console.error('Failed to hang up call:', error);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Failed to hang up call:', error);
       return false;
     } finally {
       setIsHangingUp(false);
@@ -236,12 +227,10 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           .eq('session_id', emergencyData.sessionId);
         
         if (error) {
-          console.error('Failed to update AI guide setting:', error);
           // Revert the state if database update failed
           setIsAIGuideEnabled(!newValue);
         }
       } catch (error) {
-        console.error('Failed to update AI guide setting:', error);
         // Revert the state if database update failed
         setIsAIGuideEnabled(!newValue);
       }
@@ -277,7 +266,6 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               });
             }
           } catch (error) {
-            console.error('Reverse geocoding failed:', error);
             // Fallback to coordinates if reverse geocoding fails
             updateEmergencyData({
               location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
@@ -287,7 +275,6 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           }
         },
         (error) => {
-          console.error('Error getting location:', error);
         }
       );
     }

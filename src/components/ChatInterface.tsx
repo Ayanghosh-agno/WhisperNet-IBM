@@ -21,7 +21,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
   
   // Debug log for processing status
   useEffect(() => {
-    console.log('ChatInterface - responderProcessingStatus changed:', responderProcessingStatus);
   }, [responderProcessingStatus]);
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -99,7 +98,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error('Error fetching messages:', error);
         return;
       }
 
@@ -116,7 +114,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
 
       setMessages(formattedMessages);
     } catch (error) {
-      console.error('Error fetching messages:', error);
     } finally {
       setIsLoading(false);
     }
@@ -187,13 +184,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
         });
 
       if (error) {
-        console.error('Error sending message:', error);
         return;
       }
 
       setInputText('');
     } catch (error) {
-      console.error('Error sending message:', error);
     }
   };
 
