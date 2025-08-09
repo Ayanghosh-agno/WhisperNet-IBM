@@ -116,40 +116,13 @@ export const EmergencyFooter: React.FC = () => {
   };
 
   // Show footer if emergency is active OR if session has ended (to show final status)
-  if (!isEmergencyActive && !sessionHasEnded) return null;
+  if (!isEmergencyActive) return null;
 
   // Only show footer after SOS call is initiated
-  if (!isSOSInitiated && !sessionHasEnded) return null;
+  if (!isSOSInitiated) return null;
 
-  // Show different content when session is ending
-  if (isSessionEnding) {
-    return (
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-3 shadow-lg">
-        <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-green-400" />
-              <span className="font-medium">Emergency Session Ended</span>
-            </div>
-            
-            <div className="flex items-center space-x-1">
-              <MapPin size={16} />
-              <span className="truncate max-w-32 sm:max-w-none">{location}</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            {callStatus === 'in-progress' && (
-              <div className="flex items-center space-x-1">
-                <Clock size={16} />
-                <span>Final Time: {formatElapsedTime(elapsedTime)}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Don't show footer when session has ended - status is now embedded in chat interface
+  if (sessionHasEnded || callStatus === 'completed') return null;
 
   return (
     <div className={`fixed bottom-0 left-0 right-0 ${getBackgroundColor()} text-white p-3 shadow-lg`}>
