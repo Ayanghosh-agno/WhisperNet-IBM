@@ -1,3 +1,22 @@
+import React, { useState, useEffect } from 'react';
+import { Phone, PhoneCall, PhoneOff, MapPin, Clock, Timer, CheckCircle, XCircle } from 'lucide-react';
+import { useEmergency } from '../context/EmergencyContext';
+
+export const EmergencyFooter: React.FC = () => {
+  const { 
+    isEmergencyActive, 
+    emergencyData, 
+    endEmergency, 
+    isSOSInitiated, 
+    callStatus, 
+    elapsedTime, 
+    hangupCall, 
+    isHangingUp 
+  } = useEmergency();
+  
+  const [location, setLocation] = useState<string>('');
+  const [isSessionEnding, setIsSessionEnding] = useState(false);
+
   useEffect(() => {
     if (isEmergencyActive && emergencyData.locationName) {
       // Extract just the coordinates for footer display
@@ -128,6 +147,7 @@
       </div>
     );
   }
+
   return (
     <div className={`fixed bottom-0 left-0 right-0 ${getBackgroundColor()} text-white p-3 shadow-lg`}>
       <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
