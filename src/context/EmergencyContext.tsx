@@ -161,13 +161,29 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const endEmergency = () => {
-    setIsEmergencyActive(false);
-    setCallStatus('queued');
-    setIsSOSInitiated(false);
-    setIsAIGuideEnabled(true);
-    setResponderProcessingStatus('idle');
-    setElapsedTime(0);
-    setChatMessages([]);
+    // Don't immediately end emergency if call is completed - let user see the status
+    if (callStatus === 'completed') {
+      // Keep emergency active but reset other states
+      setIsSOSInitiated(false);
+      setResponderProcessingStatus('idle');
+      setElapsedTime(0);
+      // Set a timeout to end emergency after showing completed status
+      setTimeout(() => {
+        setIsEmergencyActive(false);
+        setCallStatus('queued');
+        setIsAIGuideEnabled(true);
+        setChatMessages([]);
+      }, 3000); // Show completed status for 3 seconds
+    } else {
+      // Normal end emergency flow
+      setIsEmergencyActive(false);
+      setCallStatus('queued');
+      setIsSOSInitiated(false);
+      setIsAIGuideEnabled(true);
+      setResponderProcessingStatus('idle');
+      setElapsedTime(0);
+      setChatMessages([]);
+    }
   };
 
   const initiateSOSCall = async (): Promise<boolean> => {
