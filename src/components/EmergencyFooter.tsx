@@ -81,11 +81,9 @@ export const EmergencyFooter: React.FC = () => {
         return;
       }
     }
-    
-    // Don't end emergency immediately, let user see the final status
-    setTimeout(() => {
-      endEmergency();
-    }, 3000); // Show final status for 3 seconds
+
+    // End the emergency session
+    endEmergency();
   };
 
   const getCallStatusIcon = () => {
@@ -134,10 +132,6 @@ export const EmergencyFooter: React.FC = () => {
                 <span>Final Time: {formatElapsedTime(elapsedTime)}</span>
               </div>
             )}
-            
-            <div className="text-xs text-gray-300">
-              Redirecting in 3s...
-            </div>
           </div>
         </div>
       </div>
