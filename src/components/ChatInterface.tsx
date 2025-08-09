@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Volume2, Phone, Home, Bot, NutOff as BotOff, Headphones } from 'lucide-react';
+import { Send, Volume2, Phone, Home, Bot, NutOff as BotOff, Headphones, Timer, PhoneCall, CheckCircle, XCircle } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { supabase, WhisprMessage } from '../lib/supabase';
 
@@ -70,6 +70,23 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
         return 'text-red-600 bg-red-50 border-red-200';
       default:
         return 'text-gray-600 bg-gray-50 border-gray-200';
+    }
+  };
+
+  const getCallStatusIcon = () => {
+    switch (callStatus) {
+      case 'ringing':
+        return <Phone className="w-5 h-5 animate-pulse" />;
+      case 'queued':
+        return <Timer className="w-5 h-5" />;
+      case 'in-progress':
+        return <PhoneCall className="w-5 h-5" />;
+      case 'completed':
+        return <CheckCircle className="w-5 h-5" />;
+      case 'failed':
+        return <XCircle className="w-5 h-5" />;
+      default:
+        return <Phone className="w-5 h-5" />;
     }
   };
   // Fetch messages from Supabase
@@ -254,7 +271,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-              <Phone className="w-5 h-5 text-red-600" />
+              <div className="text-red-600">
+                {getCallStatusIcon()}
+              </div>
             </div>
             <div>
               <h1 className="font-semibold text-gray-900">Emergency Services</h1>
