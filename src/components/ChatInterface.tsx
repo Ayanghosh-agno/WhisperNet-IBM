@@ -17,7 +17,7 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onNavigate }) => {
-  const { emergencyData, endEmergency, callStatus, isSOSInitiated, startCallStatusMonitoring, stopCallStatusMonitoring, isAIGuideEnabled, toggleAIGuide, responderProcessingStatus } = useEmergency();
+  const { emergencyData, endEmergency, callStatus, isSOSInitiated, startCallStatusMonitoring, stopCallStatusMonitoring, isAIGuideEnabled, toggleAIGuide, responderProcessingStatus, elapsedTime } = useEmergency();
   
   // Debug log for processing status
   useEffect(() => {
