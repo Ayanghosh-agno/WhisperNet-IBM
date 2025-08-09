@@ -16,6 +16,7 @@ export const EmergencyFooter: React.FC = () => {
   
   const [location, setLocation] = useState<string>('');
   const [isSessionEnding, setIsSessionEnding] = useState(false);
+  const [sessionHasEnded, setSessionHasEnded] = useState(false);
 
   useEffect(() => {
     if (isEmergencyActive && emergencyData.locationName) {
@@ -81,6 +82,7 @@ export const EmergencyFooter: React.FC = () => {
 
   const handleEndCall = async () => {
     setIsSessionEnding(true);
+    setSessionHasEnded(true);
     
     // Only attempt to hang up if there's an active call
     if (isSOSInitiated && (callStatus === 'ringing' || callStatus === 'in-progress' || callStatus === 'queued')) {
@@ -113,10 +115,11 @@ export const EmergencyFooter: React.FC = () => {
     }
   };
 
-  if (!isEmergencyActive) return null;
+  // Show footer if emergency is active OR if session has ended (to show final status)
+  if (!isEmergencyActive && !sessionHasEnded) return null;
 
   // Only show footer after SOS call is initiated
-  if (!isSOSInitiated) return null;
+  if (!isSOSInitiated && !sessionHasEnded) return null;
 
   // Show different content when session is ending
   if (isSessionEnding) {
