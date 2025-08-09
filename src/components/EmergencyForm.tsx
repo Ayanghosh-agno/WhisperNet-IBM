@@ -85,6 +85,34 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
     
     return '';
   };
+
+  const validateOptionalPhoneNumber = (phoneNumber: string): string => {
+    // Skip validation if field is empty (optional field)
+    if (!phoneNumber.trim()) {
+      return '';
+    }
+    
+    if (!phoneNumber.startsWith('+')) {
+      return 'Phone number must start with + followed by country code';
+    }
+    
+    const digits = phoneNumber.replace(/\D/g, '');
+    
+    if (digits.length < 10) {
+      return 'Phone number must have at least 10 digits';
+    }
+    
+    if (digits.length > 15) {
+      return 'Phone number cannot exceed 15 digits';
+    }
+    
+    if (!isValidPhoneNumber(phoneNumber)) {
+      return 'Please enter a valid phone number with country code';
+    }
+    
+    return '';
+  };
+
   const handlePhoneChange = (field: 'callNumber' | 'emergencyContact1' | 'emergencyContact2', value: string) => {
     const formatted = formatPhoneNumber(value);
     updateEmergencyData({ [field]: formatted });
@@ -247,8 +275,18 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
                       value={emergencyData.emergencyContact1}
                       onChange={(e) => handlePhoneChange('emergencyContact1', e.target.value)}
                       placeholder="+1234567890"
-                      className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                      className={`w-full p-4 border rounded-lg focus:ring-2 text-gray-900 transition-colors ${
+                        emergencyData.emergencyContact1 && validateOptionalPhoneNumber(emergencyData.emergencyContact1)
+                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50'
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                      }`}
                     />
+                    {emergencyData.emergencyContact1 && validateOptionalPhoneNumber(emergencyData.emergencyContact1) && (
+                      <p className="text-sm text-red-600 flex items-center space-x-1 mt-1">
+                        <AlertTriangle className="w-4 h-4" />
+                        <span>{validateOptionalPhoneNumber(emergencyData.emergencyContact1)}</span>
+                      </p>
+                    )}
                   </div>
                   
                   <div>
@@ -260,8 +298,18 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
                       value={emergencyData.emergencyContact2}
                       onChange={(e) => handlePhoneChange('emergencyContact2', e.target.value)}
                       placeholder="+1234567890"
-                      className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                      className={`w-full p-4 border rounded-lg focus:ring-2 text-gray-900 transition-colors ${
+                        emergencyData.emergencyContact2 && validateOptionalPhoneNumber(emergencyData.emergencyContact2)
+                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500 bg-red-50'
+                          : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                      }`}
                     />
+                    {emergencyData.emergencyContact2 && validateOptionalPhoneNumber(emergencyData.emergencyContact2) && (
+                      <p className="text-sm text-red-600 flex items-center space-x-1 mt-1">
+                        <AlertTriangle className="w-4 h-4" />
+                        <span>{validateOptionalPhoneNumber(emergencyData.emergencyContact2)}</span>
+                      </p>
+                    )}
                   </div>
                   
                   <p className="text-sm text-gray-500">
@@ -292,7 +340,15 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading || !emergencyData.description || !emergencyData.callNumber || phoneValidationError !== '' || !isValidPhoneNumber(emergencyData.callNumber)}
+              disabled={
+                isLoading || 
+                !emergencyData.description || 
+                !emergencyData.callNumber || 
+                phoneValidationError !== '' || 
+                !isValidPhoneNumber(emergencyData.callNumber) ||
+                (emergencyData.emergencyContact1 && validateOptionalPhoneNumber(emergencyData.emergencyContact1) !== '') ||
+                (emergencyData.emergencyContact2 && validateOptionalPhoneNumber(emergencyData.emergencyContact2) !== '')
+              }
               className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-lg font-semibold py-4 px-6 rounded-lg shadow-sm transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-red-300"
             >
               <div className="flex items-center justify-center space-x-3">
