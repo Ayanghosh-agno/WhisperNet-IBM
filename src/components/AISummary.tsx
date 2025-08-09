@@ -93,6 +93,19 @@ export const AISummary: React.FC<AISummaryProps> = ({ onNavigate }) => {
                 <span className="text-gray-500">Call Number:</span>
                 <span className="ml-2 font-medium text-gray-900">{emergencyData.callNumber}</span>
               </div>
+              {(emergencyData.emergencyContact1 || emergencyData.emergencyContact2) && (
+                <div className="md:col-span-2">
+                  <span className="text-gray-500">Emergency Contacts:</span>
+                  <div className="ml-2 space-y-1">
+                    {emergencyData.emergencyContact1 && (
+                      <div className="font-medium text-gray-900">{emergencyData.emergencyContact1}</div>
+                    )}
+                    {emergencyData.emergencyContact2 && (
+                      <div className="font-medium text-gray-900">{emergencyData.emergencyContact2}</div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
