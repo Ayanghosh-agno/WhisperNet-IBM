@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, AlertCircle, MapPin, Users, Phone, MessageSquare, RefreshCw, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, AlertCircle, MapPin, Users, Phone, MessageSquare, RefreshCw, AlertTriangle, X, Check } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { LocationPicker } from './LocationPicker';
 
@@ -7,17 +7,75 @@ interface EmergencyFormProps {
   onNavigate: (route: string) => void;
 }
 
+interface SavedContacts {
+  callNumber: string;
+  emergencyContact1: string;
+  emergencyContact2: string;
+}
 export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
   const { emergencyData, updateEmergencyData } = useEmergency();
   const [isLoading, setIsLoading] = useState(false);
   const [showAdditionalContacts, setShowAdditionalContacts] = useState(false);
   const [phoneValidationError, setPhoneValidationError] = useState<string>('');
+  const [showContactPopup, setShowContactPopup] = useState(false);
+  const [savedContacts, setSavedContacts] = useState<SavedContacts | null>(null);
+
+  // Check for saved contacts on component mount
+  React.useEffect(() => {
+    const saved = localStorage.getItem('whispernet_emergency_contacts');
+    if (saved) {
+      try {
+        const contacts: SavedContacts = JSON.parse(saved);
+        // Only show popup if we have at least the main call number
+        if (contacts.callNumber) {
+          setSavedContacts(contacts);
+          setShowContactPopup(true);
+        }
+      } catch (error) {
+        console.error('Error parsing saved contacts:', error);
+        localStorage.removeItem('whispernet_emergency_contacts');
+      }
+    }
+  }, []);
+
+  const saveContactsToStorage = () => {
+    const contactsToSave: SavedContacts = {
+      callNumber: emergencyData.callNumber,
+      emergencyContact1: emergencyData.emergencyContact1,
+      emergencyContact2: emergencyData.emergencyContact2
+    };
+    
+    localStorage.setItem('whispernet_emergency_contacts', JSON.stringify(contactsToSave));
+  };
+
+  const handleUseSavedContacts = () => {
+    if (savedContacts) {
+      updateEmergencyData({
+        callNumber: savedContacts.callNumber,
+        emergencyContact1: savedContacts.emergencyContact1,
+        emergencyContact2: savedContacts.emergencyContact2
+      });
+      
+      // Show additional contacts section if there are saved emergency contacts
+      if (savedContacts.emergencyContact1 || savedContacts.emergencyContact2) {
+        setShowAdditionalContacts(true);
+      }
+    }
+    setShowContactPopup(false);
+  };
+
+  const handleDismissPopup = () => {
+    setShowContactPopup(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emergencyData.description || !emergencyData.callNumber || !isValidPhoneNumber(emergencyData.callNumber)) return;
 
     setIsLoading(true);
+    
+    // Save contacts to localStorage before proceeding
+    saveContactsToStorage();
     
     // Simulate AI processing time
     setTimeout(() => {
@@ -138,6 +196,72 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 pb-20">
+      {/* Saved Contacts Popup */}
+      {showContactPopup && savedContacts && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Phone className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Saved Emergency Contacts</h3>
+                  <p className="text-sm text-gray-600">We found contacts you used earlier</p>
+                </div>
+              </div>
+              <button
+                onClick={handleDismissPopup}
+                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Emergency Call Number:</p>
+                <p className="text-gray-900 font-mono">{savedContacts.callNumber}</p>
+                
+                {(savedContacts.emergencyContact1 || savedContacts.emergencyContact2) && (
+                  <div className="mt-3">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Additional Contacts:</p>
+                    <div className="space-y-1">
+                      {savedContacts.emergencyContact1 && (
+                        <p className="text-gray-900 font-mono text-sm">{savedContacts.emergencyContact1}</p>
+                      )}
+                      {savedContacts.emergencyContact2 && (
+                        <p className="text-gray-900 font-mono text-sm">{savedContacts.emergencyContact2}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <p className="text-sm text-gray-600">
+                Do you want to use these emergency contacts for this session?
+              </p>
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={handleUseSavedContacts}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
+              >
+                <Check className="w-4 h-4" />
+                <span>Yes, Use These</span>
+              </button>
+              <button
+                onClick={handleDismissPopup}
+                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors"
+              >
+                No, Enter New
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="max-w-2xl mx-auto pt-8">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 space-y-8">
           {/* Header */}
