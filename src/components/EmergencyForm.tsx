@@ -38,6 +38,11 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
     // Remove all non-digits
     const digits = value.replace(/\D/g, '');
     
+    // Allow empty value (for clearing the field)
+    if (digits.length === 0) {
+      return '';
+    }
+    
     // Format as +919800374139
     if (digits.length <= 12) {
       return `+${digits}`;
@@ -114,7 +119,14 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
   };
 
   const handlePhoneChange = (field: 'callNumber' | 'emergencyContact1' | 'emergencyContact2', value: string) => {
-    const formatted = formatPhoneNumber(value);
+    // For emergency contacts, allow clearing the field completely
+    let formatted: string;
+    if ((field === 'emergencyContact1' || field === 'emergencyContact2') && value.trim() === '') {
+      formatted = '';
+    } else {
+      formatted = formatPhoneNumber(value);
+    }
+    
     updateEmergencyData({ [field]: formatted });
     
     // Validate main emergency call number
