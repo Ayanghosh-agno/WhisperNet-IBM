@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Clock, Phone, PhoneOff } from 'lucide-react';
+import { MapPin, Clock, Phone, PhoneOff, Timer, PhoneCall, CheckCircle, XCircle } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 
 export const EmergencyFooter: React.FC = () => {
@@ -81,6 +81,23 @@ export const EmergencyFooter: React.FC = () => {
     endEmergency();
   };
 
+  const getCallStatusIcon = () => {
+    switch (callStatus) {
+      case 'ringing':
+        return <Phone className="w-4 h-4 animate-pulse" />;
+      case 'queued':
+        return <Timer className="w-4 h-4" />;
+      case 'in-progress':
+        return <PhoneCall className="w-4 h-4" />;
+      case 'completed':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'failed':
+        return <XCircle className="w-4 h-4" />;
+      default:
+        return <Phone className="w-4 h-4" />;
+    }
+  };
+
   if (!isEmergencyActive) return null;
 
   // Only show footer after SOS call is initiated
@@ -91,12 +108,7 @@ export const EmergencyFooter: React.FC = () => {
       <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-            </div>
-            <Phone size={16} />
+            {getCallStatusIcon()}
             <span className="font-medium">{getCallStatusText()}</span>
           </div>
           
