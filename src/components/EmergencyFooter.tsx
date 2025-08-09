@@ -50,7 +50,7 @@ export const EmergencyFooter: React.FC = () => {
       case 'queued':
         return 'Call Queued';
       case 'in-progress':
-        return 'Connected to Emergency Services';
+        return 'Connected';
       case 'completed':
         return 'Call Completed';
       case 'failed':
