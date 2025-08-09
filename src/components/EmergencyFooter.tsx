@@ -5,6 +5,7 @@ import { useEmergency } from '../context/EmergencyContext';
 export const EmergencyFooter: React.FC = () => {
   const { isEmergencyActive, emergencyData, elapsedTime, callStatus, isSOSInitiated, hangupCall, endEmergency, isHangingUp } = useEmergency();
   const [location, setLocation] = useState<string>('Location not set');
+  const [isSessionEnding, setIsSessionEnding] = useState(false);
 
   useEffect(() => {
     if (isEmergencyActive && emergencyData.locationName) {
@@ -69,16 +70,22 @@ export const EmergencyFooter: React.FC = () => {
   };
 
   const handleEndCall = async () => {
+    setIsSessionEnding(true);
+    
     // Only attempt to hang up if there's an active call
     if (isSOSInitiated && (callStatus === 'ringing' || callStatus === 'in-progress' || callStatus === 'queued')) {
       const success = await hangupCall();
       if (!success) {
         console.error('Failed to hang up call');
+        setIsSessionEnding(false);
         return;
       }
     }
     
-    endEmergency();
+    // Don't end emergency immediately, let user see the final status
+    setTimeout(() => {
+      endEmergency();
+    }, 3000); // Show final status for 3 seconds
   };
 
   const getCallStatusIcon = () => {
@@ -103,6 +110,39 @@ export const EmergencyFooter: React.FC = () => {
   // Only show footer after SOS call is initiated
   if (!isSOSInitiated) return null;
 
+  // Show different content when session is ending
+  if (isSessionEnding) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-3 shadow-lg">
+        <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <CheckCircle className="w-4 h-4 text-green-400" />
+              <span className="font-medium">Emergency Session Ended</span>
+            </div>
+            
+            <div className="flex items-center space-x-1">
+              <MapPin size={16} />
+              <span className="truncate max-w-32 sm:max-w-none">{location}</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {callStatus === 'in-progress' && (
+              <div className="flex items-center space-x-1">
+                <Clock size={16} />
+                <span>Final Time: {formatElapsedTime(elapsedTime)}</span>
+              </div>
+            )}
+            
+            <div className="text-xs text-gray-300">
+              Redirecting in 3s...
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className={`fixed bottom-0 left-0 right-0 ${getBackgroundColor()} text-white p-3 shadow-lg`}>
       <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
