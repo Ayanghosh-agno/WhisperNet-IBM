@@ -386,7 +386,7 @@ export const LiveChatView: React.FC<LiveChatViewProps> = ({ sessionId }) => {
           <div className="flex flex-col bp788:flex-row bp788:items-center bp788:justify-between space-y-4 bp788:space-y-0">
             <div className="flex items-center space-x-3 bp788:space-x-4">
               <div className="w-12 h-12 bp788:w-14 bp788:h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <Eye className="w-6 h-6 bp788:w-7 bp788:h-7 text-white" />
+                {getCallStatusIcon()}
               </div>
               <div>
                 <h1 className="text-xl bp788:text-2xl font-bold text-gray-900">Live Emergency Monitor</h1>
