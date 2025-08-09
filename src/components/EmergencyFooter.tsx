@@ -155,7 +155,7 @@ export const EmergencyFooter: React.FC = () => {
     <div className={`fixed bottom-0 left-0 right-0 ${getBackgroundColor()} text-white p-3 shadow-lg`}>
       <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
+          {(callStatus === 'in-progress' || sessionHasEnded) && elapsedTime > 0 && (
             {getCallStatusIcon()}
             <span className="font-medium">{getCallStatusText()}</span>
           </div>
@@ -166,10 +166,10 @@ export const EmergencyFooter: React.FC = () => {
           </div>
         </div>
         
-        {(isSOSInitiated && callStatus === 'in-progress') && (
+        {((isSOSInitiated && callStatus === 'in-progress') || (sessionHasEnded && elapsedTime > 0)) && (
           <div className="flex items-center space-x-1">
             <Clock size={16} />
-            <span>{formatElapsedTime(elapsedTime)}</span>
+            <span>{sessionHasEnded ? 'Final Time: ' : ''}{formatElapsedTime(elapsedTime)}</span>
           </div>
         )}
         
@@ -188,7 +188,7 @@ export const EmergencyFooter: React.FC = () => {
           ) : (
             <>
               <PhoneOff className="w-4 h-4" />
-              <span className="hidden sm:inline">End Session</span>
+              <span>{sessionHasEnded ? 'Final Time:' : ''} {formatElapsedTime(elapsedTime)}</span>
             </>
           )}
         </button>
