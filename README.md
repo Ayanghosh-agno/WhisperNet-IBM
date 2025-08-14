@@ -19,7 +19,17 @@
   - [Technology Implementation](#technology-implementation)
       - [Tech Stack](#tech-stack)
       - [Solution Architecture](#solution-architecture)
-
+   
+  - [Presentation materials](#presentation-materials)
+      - [Solution Demo Video](#solution-demo-video)
+     
+  - [Additional Details](#additional-details)
+      - [How to run the project](#run-the-project)
+      - [Live Demo](#Live-Demo)
+            
+  - [About](#about)
+      - [Authors](#Authors)
+      - [License](#license)
 
 <h2 align="center"> Project Summary <a name="project-summary"></a> </h2>
 
@@ -112,3 +122,56 @@ WhisprNet uses **multiple autonomous agents**, each powered by IBM WatsonX Grani
 ### Technical Architecture <a name="solution-architecture"></a>
 
 ![Solution Architecture](https://github.com/Ayanghosh-agno/WhisperNet-IBM/blob/main/public/whisperNetTechDesign.png)
+
+
+
+<h2 align="center"> Presentation materials <a name="presentation-materials"></a> </h2>
+
+### Solution Demo Video <a name="solution-demo-video"></a>
+
+[![Solution Demo Video]()]()
+
+
+<h2 align="center"> Additional Details <a name="additional-details"></a> </h2>
+
+### How to run the project <a name="run-the-project"></a>
+
+
+Step 1: Cloning of the repository :
+
+Our first goal is to set up a developer project which we'll use to modify our application. It starts by cloning the repository. Use the command git clone 
+
+```bash
+git clone https://github.com/Ayanghosh-agno/WhisperNet-IBM.git
+```
+
+Step 2: Configure Environmental Variables :
+
+- **Twilio** (SID, Auth Token, Voice settings)
+- **Supabase** (Project URL, API Key)
+- **IBM WatsonX** (API Key, Project ID)
+- **IBM Speech-to-Text** (API Key, Endpoint)
+
+Step 3: Deploy the Supabase edge functions manually.
+
+Step 4: Start testing.
+- Place a silent call to the Twilio number.
+- Watch AI fill in missing info and update emergency contacts.
+
+
+### Live Demo <a name="Live-Demo"></a>
+
+We can see live working of **WhisperNet** - [Here](https://whispernet-ibm.netlify.app/)
+
+
+<h2 align="center"> About <a name="about"></a> </h2>
+
+### Author<a name="Authors"></a>
+
+<img src="https://github.com/Ayanghosh-agno/WhisperNet-IBM/blob/main/public/Ayan%20Ghosh.png" style="max-width: 70px;">
+
+   **Ayan Ghosh**
+
+### License<a name="license"></a>
+This project is licensed under the Apache 2 License - see the [LICENSE](LICENSE) file for details.
+
