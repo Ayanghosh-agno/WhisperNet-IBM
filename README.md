@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/badge/License-Apache2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Community](https://img.shields.io/badge/join-Call%20For%20Code%20Community-blue)](https://developer.ibm.com/callforcode/solutions/projects/get-started/)
 <h1 align="center"<a name="title"></a>WhisperNet</h1>
 <div align="center">
