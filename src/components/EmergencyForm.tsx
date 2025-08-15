@@ -128,7 +128,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
       return '';
     }
     
-    // Format as +919800374139
+    // Format as +919800000000
     if (digits.length <= 12) {
       return `+${digits}`;
     }
