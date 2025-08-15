@@ -22,7 +22,7 @@ export const EmergencyTrigger: React.FC<EmergencyTriggerProps> = ({ onNavigate }
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
             <Shield className="w-8 h-8 text-red-600" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">WhisprNet</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">WhisperNet</h1>
           <p className="text-gray-300 text-lg">Silent Emergency Communication</p>
         </div>
 
@@ -42,7 +42,7 @@ export const EmergencyTrigger: React.FC<EmergencyTriggerProps> = ({ onNavigate }
 
         {/* Instructions */}
         <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
-          <h2 className="text-white font-semibold mb-3">How WhisprNet Works</h2>
+          <h2 className="text-white font-semibold mb-3">How WhisperNet Works</h2>
           <div className="text-gray-300 text-sm space-y-2">
             <p>1. Tap "Start Emergency" to begin</p>
             <p>2. Fill out the emergency form</p>
