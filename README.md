@@ -78,7 +78,7 @@ Key features:
 
 WhisperNet uses **multiple autonomous agents**, each powered by IBM WatsonX Granite models.
 
-#### **1. Responder Aid Agent**
+**1. Responder Aid Agent**
 - **Goal:** Acts as the victim’s voice in real time.
 - **Input:**  
   - Responder’s spoken question (converted to text via IBM Speech-to-Text).
@@ -88,7 +88,7 @@ WhisperNet uses **multiple autonomous agents**, each powered by IBM WatsonX Gran
 - **Output:** Spoken answer to the responder via Twilio + stored in conversation logs.
 
 
-#### **2. Stage 2 Alert Agent**
+**2. Stage 2 Alert Agent**
 - **Goal:** Decide when to escalate to full SMS alert with details.
 - **Input:** Entire victim-responder conversation log.
 - **Processing:**  
@@ -102,7 +102,7 @@ WhisperNet uses **multiple autonomous agents**, each powered by IBM WatsonX Gran
   - Live chat link for ongoing updates.
 
 
-#### **3. Emergency Contact Context Agent**
+**3. Emergency Contact Context Agent**
 - **Goal:** Provide dynamic Q&A for emergency contacts.
 - **Input:** Session ID + chat history of the emergency.
 - **Processing:**  
