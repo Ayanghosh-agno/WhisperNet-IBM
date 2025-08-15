@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, AlertCircle, MapPin, Users, Phone, MessageSquare, RefreshCw, AlertTriangle, X, Check } from 'lucide-react';
+import { ArrowLeft, AlertCircle, MapPin, Users, Phone, MessageSquare, RefreshCw, AlertTriangle, X, Check, MapPinOff } from 'lucide-react';
 import { useEmergency } from '../context/EmergencyContext';
 import { LocationPicker } from './LocationPicker';
 
@@ -18,6 +18,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
   const [showAdditionalContacts, setShowAdditionalContacts] = useState(false);
   const [phoneValidationError, setPhoneValidationError] = useState<string>('');
   const [showContactPopup, setShowContactPopup] = useState(false);
+  const [showLocationWarning, setShowLocationWarning] = useState(false);
   const [savedContacts, setSavedContacts] = useState<SavedContacts | null>(null);
 
   // Check for saved contacts on component mount
@@ -71,6 +72,18 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
     e.preventDefault();
     if (!emergencyData.description || !emergencyData.callNumber || !isValidPhoneNumber(emergencyData.callNumber)) return;
 
+    // Check if location data is missing
+    const hasLocationData = emergencyData.location && emergencyData.location.trim() !== '';
+    
+    if (!hasLocationData) {
+      setShowLocationWarning(true);
+      return;
+    }
+
+    proceedWithSubmission();
+  };
+
+  const proceedWithSubmission = () => {
     setIsLoading(true);
     
     // Save contacts to localStorage before proceeding
@@ -81,6 +94,11 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
       setIsLoading(false);
       onNavigate('/summary');
     }, 2000);
+  };
+
+  const handleProceedWithoutLocation = () => {
+    setShowLocationWarning(false);
+    proceedWithSubmission();
   };
 
   const handleLocationChange = (locationData: { address: string; latitude: number; longitude: number }) => {
@@ -195,6 +213,67 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 pb-20">
+      {/* Location Warning Modal */}
+      {showLocationWarning && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                  <MapPinOff className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Location Not Captured</h3>
+                  <p className="text-sm text-gray-600">Your location information is missing</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowLocationWarning(false)}
+                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                <div className="flex items-start space-x-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-amber-800 font-medium mb-2">
+                      Emergency responders may not be able to locate you quickly without your location.
+                    </p>
+                    <p className="text-sm text-amber-700">
+                      We recommend going back to add your location for faster response times.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-sm text-gray-600">
+                Do you still want to proceed without location information?
+              </p>
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowLocationWarning(false)}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
+              >
+                <MapPin className="w-4 h-4" />
+                <span>Add Location</span>
+              </button>
+              <button
+                onClick={handleProceedWithoutLocation}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-xl transition-colors"
+              >
+                Proceed Anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Saved Contacts Popup */}
       {showContactPopup && savedContacts && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
