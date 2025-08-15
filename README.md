@@ -129,8 +129,7 @@ WhisprNet uses **multiple autonomous agents**, each powered by IBM WatsonX Grani
 
 ### Solution Demo Video <a name="solution-demo-video"></a>
 
-[![Solution Demo Video]()]()
-
+[![Solution Demo Video](https://github.com/Ayanghosh-agno/WhisperNet-IBM/blob/main/public/Demonstration-Video-Thumbnail.png)](https://www.youtube.com/)
 
 <h2 align="center"> Additional Details <a name="additional-details"></a> </h2>
 
