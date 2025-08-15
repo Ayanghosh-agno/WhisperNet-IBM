@@ -24,6 +24,7 @@
       - [Solution Demo Video](#solution-demo-video)
      
   - [Additional Details](#additional-details)
+      - [Alignment with the Theme: SDG 11 – Sustainable Cities and Communities](#theme-alignment)
       - [How to run the project](#run-the-project)
       - [Live Demo](#Live-Demo)
             
@@ -75,7 +76,7 @@ Key features:
 
 ### Agentic AI Workflow with IBM WatsonX <a name="watsonx-agents"></a>
 
-WhisprNet uses **multiple autonomous agents**, each powered by IBM WatsonX Granite models.
+WhisperNet uses **multiple autonomous agents**, each powered by IBM WatsonX Granite models.
 
 ### **1. Responder Aid Agent**
 - **Goal:** Acts as the victim’s voice in real time.
@@ -132,6 +133,20 @@ WhisprNet uses **multiple autonomous agents**, each powered by IBM WatsonX Grani
 [![Solution Demo Video](https://github.com/Ayanghosh-agno/WhisperNet-IBM/blob/main/public/Demonstration-Video-Thumbnail.png)](https://www.youtube.com/)
 
 <h2 align="center"> Additional Details <a name="additional-details"></a> </h2>
+
+### Alignment with the Theme: SDG 11 – Sustainable Cities and Communities <a name="theme-alignment"></a>
+
+WhisperNet directly supports **United Nations Sustainable Development Goal 11: Sustainable Cities and Communities** by making urban spaces **safer, more inclusive, and resilient** through **AI-powered silent emergency communication**.  
+
+In modern cities, safety and rapid response are critical — especially in situations where victims cannot speak or make a loud SOS call. WhisperNet bridges this gap by enabling **silent, continuous, AI-assisted communication** between victims, emergency responders, and trusted contacts, ensuring timely intervention without escalating danger.  
+
+By leveraging **IBM watsonx agentic AI**, WhisperNet:  
+- **Reduces response time** through autonomous situation summarization and escalation.  
+- **Improves accessibility** for individuals in vulnerable situations, including those with speech impairments.  
+- **Operates in low-bandwidth environments**, making it effective during disasters or infrastructure outages.  
+
+This approach not only **enhances real-time safety in cities** but also creates a scalable blueprint for **community-driven emergency networks**, aligning perfectly with SDG 11’s mission of making cities **safe, resilient, and sustainable**.
+
 
 ### How to run the project <a name="run-the-project"></a>
 
