@@ -455,7 +455,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
                   <span>{phoneValidationError}</span>
                 </p>
               )}
-              <p className="text-sm text-gray-500">Format: +CountryCode followed by phone number (e.g., +919800374139)</p>
+              <p className="text-sm text-gray-500">Format: +CountryCode followed by phone number (e.g., +9198888888888)</p>
             </div>
 
             {/* Additional Emergency Contacts */}
