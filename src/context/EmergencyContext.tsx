@@ -55,6 +55,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [responderProcessingStatus, setResponderProcessingStatus] = useState('idle');
   const [isHangingUp, setIsHangingUp] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [callConnectedTime, setCallConnectedTime] = useState<number | null>(null);
   const [emergencyData, setEmergencyData] = useState<EmergencyData>({
     situationType: '',
     location: '',
@@ -85,7 +86,18 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         .single();
 
       if (data && !error) {
-        setCallStatus(data.callStatus || 'queued');
+        const newStatus = data.callStatus || 'queued';
+        const previousStatus = callStatus;
+        setCallStatus(newStatus);
+        
+        // Set call connected time when status changes to 'in-progress'
+        if (newStatus === 'in-progress' && previousStatus !== 'in-progress') {
+          setCallConnectedTime(Date.now());
+        } else if (newStatus !== 'in-progress' && previousStatus === 'in-progress') {
+          // Reset when call is no longer in progress
+          setCallConnectedTime(null);
+        }
+        
         setIsAIGuideEnabled(data.ai_guide_enabled ?? true);
         const processingStatus = data.responder_processing_status || 'idle';
         setResponderProcessingStatus(processingStatus);
@@ -109,7 +121,17 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         },
         (payload) => {
           const newStatus = payload.new.callStatus || 'queued';
+          const previousStatus = callStatus;
           setCallStatus(newStatus);
+          
+          // Set call connected time when status changes to 'in-progress'
+          if (newStatus === 'in-progress' && previousStatus !== 'in-progress') {
+            setCallConnectedTime(Date.now());
+          } else if (newStatus !== 'in-progress' && previousStatus === 'in-progress') {
+            // Reset when call is no longer in progress
+            setCallConnectedTime(null);
+          }
+          
           const aiGuideEnabled = payload.new.ai_guide_enabled ?? true;
           setIsAIGuideEnabled(aiGuideEnabled);
           const processingStatus = payload.new.responder_processing_status || 'idle';
@@ -121,20 +143,20 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return () => {
       channel.unsubscribe();
     };
-  }, [emergencyData.sessionId, isSOSInitiated, isMonitoringCallStatus]);
+  }, [emergencyData.sessionId, isSOSInitiated, isMonitoringCallStatus, callStatus]);
 
-  // Timer only runs when call status is 'in-progress'
+  // Timer only runs when call status is 'in-progress' and uses call connected time
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isEmergencyActive && isSOSInitiated && callStatus === 'in-progress') {
+    if (isEmergencyActive && isSOSInitiated && callStatus === 'in-progress' && callConnectedTime) {
       interval = setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - emergencyData.timestamp) / 1000));
+        setElapsedTime(Math.floor((Date.now() - callConnectedTime) / 1000));
       }, 1000);
-    } else if (!isSOSInitiated || callStatus !== 'in-progress') {
+    } else if (!isSOSInitiated || callStatus !== 'in-progress' || !callConnectedTime) {
       setElapsedTime(0);
     }
     return () => clearInterval(interval);
-  }, [isEmergencyActive, isSOSInitiated, callStatus, emergencyData.timestamp]);
+  }, [isEmergencyActive, isSOSInitiated, callStatus, callConnectedTime]);
 
   const startEmergency = () => {
     const timestamp = Date.now();
@@ -144,6 +166,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCallStatus('queued');
     setIsSOSInitiated(false);
     setIsAIGuideEnabled(true);
+    setCallConnectedTime(null);
     setElapsedTime(0);
   };
 
@@ -161,6 +184,7 @@ export const EmergencyProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setIsSOSInitiated(false);
     setIsAIGuideEnabled(true);
     setResponderProcessingStatus('idle');
+    setCallConnectedTime(null);
     setElapsedTime(0);
     setChatMessages([]);
   };
