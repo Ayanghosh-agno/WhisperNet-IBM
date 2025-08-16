@@ -132,8 +132,7 @@ WhisperNet uses **multiple autonomous agents**, each powered by IBM WatsonX Gran
 
 ### Solution Demo Video <a name="solution-demo-video"></a>
 
-[![Solution Demo Video](https://github.com/Ayanghosh-agno/WhisperNet-IBM/blob/main/public/Demonstration-Video-Thumbnail.png)](https://www.youtube.com/)
-
+[![Solution Demo Video](https://github.com/Ayanghosh-agno/WhisperNet-IBM/blob/main/public/Demonstration-Video-Thumbnail.png)](https://youtu.be/oVTHP8kS-rM)
 <h2 align="center"> Additional Details <a name="additional-details"></a> </h2>
 
 ### Alignment with the Theme: SDG 11 – Sustainable Cities and Communities <a name="theme-alignment"></a>
