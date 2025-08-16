@@ -1,5 +1,7 @@
 [![License](https://img.shields.io/badge/License-Apache2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Community](https://img.shields.io/badge/join-Call%20For%20Code%20Community-blue)](https://developer.ibm.com/callforcode/solutions/projects/get-started/)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1e0d5f91-3446-4c40-a97f-c9f216f9248d/deploy-status)](https://app.netlify.com/projects/whispernet-ibm/deploys)
+
 <h1 align="center"<a name="title"></a>WhisperNet</h1>
 <div align="center">
   
