@@ -26,10 +26,10 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
     // Only show popup if the emergency form is empty (first time opening)
     const isFormEmpty = !emergencyData.callNumber && 
                        !emergencyData.emergencyContact1 && 
-                       !emergencyData.emergencyContact2 &&
-                       !emergencyData.description;
+                       !emergencyData.emergencyContact2;
     
-    if (!isFormEmpty) {
+    // Don't show popup if contacts are already filled (returning from AI summary)
+    if (emergencyData.callNumber || emergencyData.emergencyContact1 || emergencyData.emergencyContact2) {
       return; // Don't show popup if form already has data
     }
     
@@ -46,7 +46,6 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
         localStorage.removeItem('whispernet_emergency_contacts');
       }
     }
-  }, [emergencyData.callNumber, emergencyData.emergencyContact1, emergencyData.emergencyContact2, emergencyData.description]);
 
   const saveContactsToStorage = () => {
     const contactsToSave: SavedContacts = {
