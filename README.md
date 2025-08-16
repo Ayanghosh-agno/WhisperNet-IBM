@@ -83,7 +83,7 @@ WhisperNet uses **multiple autonomous agents**, each powered by IBM WatsonX Gran
 **1. Responder Aid Agent**
 - **Goal:** Acts as the victim’s voice in real time.
 - **Input:**  
-  - Responder’s spoken question (converted to text via IBM Speech-to-Text).
+  - Responder’s spoken question (converted to text via Assembly AI Speech-to-Text).
   - Past victim messages in the current session.
 - **Processing:**  
   - WatsonX Granite Instruct model generates the **most likely victim response** based strictly on prior context if not enough context present then watsonx ai let user to answer by typing in the chat.
@@ -116,7 +116,7 @@ WhisperNet uses **multiple autonomous agents**, each powered by IBM WatsonX Gran
 ### Tech Stack Used <a name="tech-stack"></a>
 
 1. **IBM WatsonX AI (Granite-3-8B Instruct)** → Multi-agent reasoning, summarization, and context inference.
-2. **IBM Speech-to-Text** → Transcribes responder’s voice in real-time.
+2. **Assembly AI Speech-to-Text** → Transcribes responder’s voice in real-time.
 3. **Twilio Voice API** → Phone calls between victim & responder.
 4. **Twilio Messaging API** → Emergency SMS alerts for the emergency contacts.
 5. **Supabase Edge Functions** → Secure serverless AI & communication orchestration.
@@ -166,7 +166,7 @@ Step 2: Configure Environmental Variables :
 - **Twilio** (SID, Auth Token, Voice settings)
 - **Supabase** (Project URL, API Key)
 - **IBM WatsonX** (API Key, Project ID)
-- **IBM Speech-to-Text** (API Key, Endpoint)
+- **Assembly AI Speech-to-Text** (API Key, Endpoint)
 
 Step 3: Deploy the Supabase edge functions manually.
 
