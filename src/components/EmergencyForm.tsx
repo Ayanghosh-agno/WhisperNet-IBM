@@ -46,6 +46,7 @@ export const EmergencyForm: React.FC<EmergencyFormProps> = ({ onNavigate }) => {
         localStorage.removeItem('whispernet_emergency_contacts');
       }
     }
+  }, [emergencyData.callNumber, emergencyData.emergencyContact1, emergencyData.emergencyContact2]);
 
   const saveContactsToStorage = () => {
     const contactsToSave: SavedContacts = {
